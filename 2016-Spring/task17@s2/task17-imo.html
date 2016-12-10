@@ -1,0 +1,79 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 17</title>
+  </head>
+<!--   <style>
+    fieldset {
+      margin-bottom: 20px;
+    }
+    .aqi-chart-wrap {
+      position: relative;
+      margin: 0 auto;
+    }
+    .aqi-chart-wrap div {
+      position: absolute;
+      bottom: 0;
+      border: 1px solid #000;
+      border-bottom: none;
+      background-color: pink;
+    }
+  </style> -->
+  <style>
+    .aqi-chart-wrap {
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      display: -o-flex;
+      display: flex;
+      /*flex-direction: row;
+      flex-wrap: nowrap;*/
+      flex-flow: row nowrap;
+      justify-content: space-around;
+      align-items: flex-end;
+      background-color: #ccc;
+      color: #fff;
+      text-align: center;
+    }
+    .aqi-chart-wrap div {
+      border: 1px solid #000;
+      border-bottom: none;
+      /*height: 200px;*/
+      background-color: pink;
+    }
+    .aqi-chart-wrap .day {
+      min-width: 5px;
+      max-width: 10px;
+    }
+    .aqi-chart-wrap .week {
+      min-width: 25px;
+      max-width: 30px;
+    }
+    .aqi-chart-wrap .month {
+      min-width: 60px;
+      max-width: 70px;
+    }
+  </style>
+<body>
+  <fieldset id="form-gra-time">
+    <legend>请选择日期粒度：</legend>
+    <label>日<input name="gra-time" value="day" type="radio" checked="checked"></label>
+    <label>周<input name="gra-time" value="week" type="radio"></label>
+    <label>月<input name="gra-time" value="month" type="radio"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>请选择查看的城市：</legend>
+    <select id="city-select">
+      <!-- <option>北京</option> -->
+    </select>
+  </fieldset>
+
+  <div class="aqi-chart-wrap">
+    这里什么也没有OAO
+  </div>
+  <!-- 这么写不用 window.onload OAO -->
+  <script src="task17-imo-v2.js"></script>
+</body>
+</html>

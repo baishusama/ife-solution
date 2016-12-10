@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>任务六：通过HTML及CSS模拟报纸排版</title>
+    <style>
+    /* -------------
+        全局 CSS 样式
+    -------------*/
+        html {
+            background-color: lightgray;
+        }
+        body {
+            margin: 30px auto;
+            width: 980px;
+            height: 1386px;
+            background-color: #fff;
+            font-family: "黑体";
+        }
+    /* -------------
+        页头
+    -------------*/
+        .top {
+            overflow: hidden;
+            margin: 0 auto;
+            width: 892px;
+            border-bottom: 2px solid #938e8c;
+        }
+        .top-left {
+            float: left;
+            box-sizing: border-box;
+            padding-top: 45px;
+            width: 110px;
+            height: 61px;
+            background-color: #d35e5f;
+            color: #fff;
+            font-size: 12px;
+            /*text-align: center;*/
+            /*line-height: 61px;*/
+            vertical-align: bottom;
+        }
+        .top-left span{
+            padding: 0 5px;
+        }
+        .top-right {
+            float: right;
+            box-sizing: border-box;
+            padding-top: 45px;
+            /*height: 61px;*/
+            color: #d45d5c;
+            font-size: 12px;
+        }
+    /* -------------
+        页面顶部
+    -------------*/
+        header {
+            margin: 30px auto;
+            width: 892px;
+            height: 301px;
+        }
+        .main-pic {
+            position: relative;
+            float: left;
+            width: 641px;
+            height: 301px;
+            background: url("images/main-pic.png") no-repeat center center;
+        }
+        .main-pic::before {
+            position: absolute;
+            left: 0;
+            display: block;
+            content: "";
+            width: 191px;
+            height: 301px;
+            background-color: rgba(66, 140, 89, .5);
+        }
+        .main-pic::after {
+            position: absolute;
+            right: 0;
+            display: block;
+            content: "";
+            width: 191px;
+            height: 301px;
+            background-color: rgba(204, 118, 128, .5);
+        }
+        .side { 
+            float: right;
+            box-sizing: border-box;
+            border-top: 2px solid #cc8091;
+            width: 203px;
+            height: 301px;
+            font-family: "微软雅黑";
+        }
+        .side-top h2 {
+            margin: 6px 0;
+            font-size: 17px;
+            /*text-decoration: underline; ??? */
+        }
+        .side-top h2 > span {
+            display: inline-block;
+            border-bottom: 2px solid;
+            font-weight: normal;
+        }
+        /*.side-top h2:first-letter { ???
+            font-size: 24px;
+        }*/
+        .side-top h2 .first-letter {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .side-top p {
+            margin: 0 0 40px 0;
+            font-size: 12px;
+            color: #676767;
+            font-family: "楷体";
+            font-style: italic;
+        }
+        .side-center {
+            font-size: 116px;
+            font-style: italic;
+            color: #75b86b;
+        }
+        .side-bottom {
+            overflow: hidden;
+        }
+        .side-bottom div {
+            float: left;
+        }
+        .side-bottom div:first-child {
+            margin-right: 10px;
+            font-size: 55px;
+            color: #cc8091;
+        }
+        .side-bottom div:last-child { margin-top: 14px; }
+        .side-bottom div:last-child span { display: block; }
+        .side-bottom div:last-child span:first-child { font-size: 21px; color: #cc8091; }
+        .side-bottom div:last-child span:last-child { font-size: 12px; color: lightgray; }
+    /* -------------
+        页面中部
+    -------------*/
+        section {
+            overflow: hidden;
+            margin: 0 auto 45px auto;
+            padding-right: 251px;/* 892 - 641 */
+            width: 641px;
+            font-family: "微软雅黑";
+        }
+        .col {
+            float: left;
+        }
+        .col h3 {
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .col p {
+            font-size: 12px;
+            color: #231815;
+            opacity: 0.7;
+            font-family: "宋体";
+        }
+        .col p.para-what {
+            font-family: "微软雅黑";
+        }
+        .col-green {
+            margin-right: 5%;
+            width: 34%;
+            color: #418c59;
+        }
+        .col-yellow {
+            margin-right: 5%;
+            width: 30%;
+            color: #d2994f;
+        }
+        .col-red {
+            width: 26%;
+            color: #cc7680;
+        }
+        .col-red .percentage {
+            color: #cd4a48;
+            font-style: italic;
+        }
+    /* -------------
+        页面底部 - 文章
+    -------------*/
+        article {
+            overflow: hidden;
+            margin: 0 auto 35px auto;
+            width: 892px;
+        }
+        .article-left {
+            float: left;
+            width: 415px;
+        }
+        .article-right {
+            float: right;
+        }
+        /* -------------
+            文章标题
+        -------------*/
+        .article-left .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #11456b;
+        }
+        .article-left .header h1 { margin: 0 0 16px 0; color: #11456b; font-weight: bold; }
+        .article-left .header h1:first-child { font-size: 42px; }
+        .article-left .header h1:last-child { font-size: 33px; }
+        .article-left .header .first-word {
+            color: #f5e327;
+            font-size: 72px;
+            font-style: italic;
+        }
+        .article-left .content p {
+            margin: 0;
+            font-size: 12px;
+            color: #767777;
+        }
+        .article-left .content .first-word {
+            float: left;
+            color: #f5e327;
+            font-size: 70px;
+            font-family: "微软雅黑";
+        }
+        .article-left .content img {
+            float: right;
+        }
+        /* -------------
+            配图 - “前端技术”
+        -------------*/
+        .article-rtop {
+            position: relative;
+            margin-bottom: 30px;
+            width: 458px;
+            height: 257px;
+            background: url("images/article-pic-2.png") no-repeat center center;
+        }
+        .article-rtop .cover {
+            position: absolute;
+            bottom: 0;
+            width: 458px;
+            height: 61px;
+            background-color: rgba(4, 0, 0, .4);
+        }
+        .article-rtop .cover div {
+            position: relative;
+            top: 50%;
+            float: left;
+            margin-top: -22px;
+            margin-left: 38px;/* 516 - 478 */
+            border-left: 3px solid #72b16a;
+            padding-left: 10px;
+            height: 44px;
+            line-height: 44px;
+            font-size: 26px;
+            color: #fff;
+        }
+        .article-rtop .cover div span {
+            box-sizing: border-box;
+            font-size: 12px;
+            font-style: italic;
+            color: #72b16a;
+            /* 字间距 ??? */
+            /* font-stretch */
+        }
+        /* -------------
+            文章右下角
+        -------------*/
+        .article-rbottom {
+            position: relative;
+            width: 458px;
+            height: 318px;
+            background-color: #eeedd6;
+        }
+        .article-rbottom > div:first-child {
+            padding: 20px 20px 20px 44px;
+            color: #5a5b5b;
+            font-family: "宋体";
+        }
+        .article-rbottom > div:first-child p {
+            position: relative;
+            font-size: 16px;
+        }
+        .article-rbottom > div:first-child p:before {
+            position: absolute;
+            left: -16px;
+            top: 9px;
+            display: block;
+            content: "";
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 8px solid #5a5b5b;
+            width: 0;
+        }
+        .article-rbottom > div:first-child p span {
+            font-size: 12px;
+            font-style: italic;
+            text-align: right;
+        }
+        /* -------------
+            文章右下角
+        -------------*/
+        .article-rbottom > div:last-child {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 160px;
+        }
+        /* -------------
+            右下角 - 红色部分 
+        -------------*/
+        .article-rbottom > div:last-child .red-part {
+            float: left;
+            box-sizing: border-box;
+            padding: 37px 14px;
+            width: 260px;/* 738 - 478 */
+            height: 160px;/* 1285 - 1125 */
+            background-color: #d45d5c;
+            color: #fff;
+        }
+        .article-rbottom .red-part .first-word {
+            float: left;
+            margin-right: 8px;
+            border-right: 2px solid #fff;
+            padding-right: 4px;
+            height: 86px;
+            font-size: 110px;
+            line-height: 86px;
+        }
+        .article-rbottom .red-part div {
+            font-style: italic;
+            font-size: 20px;
+        }
+        .article-rbottom .red-part p {
+            margin: 6px 0;
+            font-size: 12px;
+        }
+        /* -------------
+            右下角 - 段落部分 
+        -------------*/
+        .article-rbottom > div:last-child > p {
+            float: left;
+            box-sizing: border-box;
+            margin: 20px 0;
+            padding: 0 10px;
+            width: 198px;/* 458 - 260*/
+            height: 120px;/* .red-part's width  - 20 * 2 */
+            font-size: 14px;
+            font-style: italic;
+            color: #5a5b5b;
+        }
+        .article-rbottom > div:last-child > p:before {
+            /* ??? 为啥需要相对定位 
+                & 有没有更优雅的解决方法？ */
+            position: relative;
+            top: -15px;
+            left: -40px;
+            float: left;
+            content: open-quote;
+            margin-bottom: -30px;
+            width: 40px;
+            height: 40px;
+            font-size: 70px;
+            font-style: normal;
+            color: #d45d5c;
+        }
+        .article-rbottom > div:last-child > p:after {
+            /* ??? 为啥需要相对定位 
+                & 有没有更优雅的解决方法？ */
+            position: relative;
+            top: 5px;
+            left: 23px;
+            float: right;
+            content: close-quote;
+            /*width: 40px;*/
+            height: 40px;
+            font-size: 70px;
+            font-style: normal;
+            color: #d45d5c;
+        }
+    /* -------------
+        页脚
+    -------------*/
+        footer {
+            overflow: hidden;
+            margin: 0 auto;
+            border-top: 1px solid #938e8c;
+            width: 892px;
+        }
+        footer div {
+            float: right;
+            height: 61px;
+            color: #d45d5c;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top">
+        <div class="top-left"><span>ife.baidu.com</span></div>
+        <div class="top-right"><span>2016.03</span></div>
+    </div>
+    <header>
+        <!-- <img src="images/main-pic.png" alt="" class="main-pic" /> -->
+        <div class="main-pic"></div>
+        <div class="side">
+            <div class="side-top">
+                <h2><span><span class="first-letter">A</span>BOUT</span></h2>
+                <h2><span><span class="first-letter">T</span>ECHNOLOGE</span></h2>
+                <p>About technologe about technologe about technologe</p>
+            </div>
+            <div class="side-center">700</div>
+            <div class="side-bottom">
+                <div>3.2</div>
+                <div><span>css</span><span>csscscscscscscs</span></div>
+            </div>
+        </div>
+    </header>
+    <section>
+        <div class="col col-green">
+            <h3>What</h3>
+            <p>端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端</p>
+        </div>
+        <div class="col col-yellow">
+            <h3>When</h3>
+            <p>端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端</p>
+        </div>
+        <div class="col col-red">
+            <h3>How</h3>
+            <p>端前端前端端前端前端端前</p>
+            <p>端前端端前端前</p>
+            <p>端端前端前端端前端前端</p>
+            <p class="para-what">What--------<span class="percentage">40%</span></p>
+            <p class="para-what">What--------<span class="percentage">40%</span></p>
+            <p class="para-what">What--------<span class="percentage">40%</span></p>
+        </div>
+    </section>
+    <article>
+        <div class="article-left">
+            <div class="header">
+                <h1><span class="first-word">THE</span>&nbsp;TECHNOLOGE OF FRONT</h1>
+                <h1>前端技术领域</h1>
+            </div>
+            <div class="content">
+                <img src="images/article-pic-1.png" alt="正文配图-开发前端中的 MAC 笔记本" />
+                <p><span class="first-word">前</span>端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端</p>
+                
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端端前端前端</p>
+            </div>
+        </div>
+        <div class="article-right">
+            <div class="article-rtop">
+                <div class="cover">
+                    <div>前端技术<span> 前端技术前端技术</span></div>
+                </div>
+            </div>
+            <div class="article-rbottom">
+                <div>
+                    <p>前端前端前端前端前端前端.....................<span class="page-char">前端</span></p>
+                    <p>前端前端前端前端前端前端.....................<span class="page-char">前端</span></p>
+                    <p>前端前端前端前端前端前端.....................<span class="page-char">前端</span></p>
+                </div>
+                <div>
+                    <div class="red-part">
+                        <span class="first-word">O</span>
+                        <div>ONE TWO</div>
+                        <div>THREE FOUR FIVE</div>
+                        <p>hello world hello world hello world</p>
+                    </div>
+                    <p>world hello world hello world hello world hello world hello world hello world hello world hello world hello world hello world</p>
+                </div>
+            </div>
+        </div>
+    </article>
+    <footer>
+        <div>ife.baidu.com</div>
+    </footer>
+</body>
+</html>
