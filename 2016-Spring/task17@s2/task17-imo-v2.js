@@ -62,10 +62,29 @@ function renderChart() {
   console.log(chartData)
   var div = null;
   for(var t in chartData){
+    var data = chartData[t];
+
+    var aqiCondition = "";
+    if(data > 400){
+      aqiCondition = "very-serious";
+    }
+    else if(data > 300){
+      aqiCondition = "serious";
+    }
+    else if(data > 200){
+      aqiCondition = "not-bad";
+    }
+    else if(data > 100){
+      aqiCondition = "good";
+    }
+    else {   
+      aqiCondition = "very-good";
+    }
+    
     div = document.createElement("div");
-    div.title = t + ': ' + chartData[t];
-    div.className = className;
-    div.style = "height: " + (parseInt(chartData[t]) * 2) + "px;";
+    div.title = t + ': ' + data;
+    div.className = className + ' ' + aqiCondition;
+    div.style = "height: " + (parseInt(data) * 2) + "px;";
     wrap.appendChild(div);
   }
 }

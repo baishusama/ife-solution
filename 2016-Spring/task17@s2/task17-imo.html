@@ -32,15 +32,15 @@
       flex-flow: row nowrap;
       justify-content: space-around;
       align-items: flex-end;
-      background-color: #ccc;
-      color: #fff;
+      background-color: #eee;
+      color: #555;
       text-align: center;
     }
     .aqi-chart-wrap div {
       border: 1px solid #000;
       border-bottom: none;
       /*height: 200px;*/
-      background-color: pink;
+      /*background-color: pink;*/
     }
     .aqi-chart-wrap .day {
       min-width: 5px;
@@ -53,6 +53,21 @@
     .aqi-chart-wrap .month {
       min-width: 60px;
       max-width: 70px;
+    }
+    .aqi-chart-wrap .very-good {
+      background-color: hsla(120, 100%, 80%,1);
+    }
+    .aqi-chart-wrap .good {
+      background-color: hsla(60, 90%, 70%,1);
+    }
+    .aqi-chart-wrap .not-bad {
+      background-color: hsla(40, 80%, 60%,1);
+    }
+    .aqi-chart-wrap .serious {
+      background-color: hsla(20, 70%, 50%,1);
+    }
+    .aqi-chart-wrap .very-serious {
+      background-color: hsla(0, 60%, 40%,1);
     }
   </style>
 <body>
@@ -71,7 +86,7 @@
   </fieldset>
 
   <div class="aqi-chart-wrap">
-    这里什么也没有OAO
+    请选择选项来生成图表OvO
   </div>
   <!-- 这么写不用 window.onload OAO -->
   <script src="task17-imo-v2.js"></script>
