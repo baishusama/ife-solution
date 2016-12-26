@@ -51,15 +51,19 @@ var pageState = {
   nowGraTime: "day"
 }
 
+// dom
+var inputFieldset = document.getElementById("form-gra-time");
+//var radioInputs = document.getElementById("form-gra-time").getElementsByTagName("input");
+var citySlt = document.getElementById("city-select");
+var chartWrap = document.getElementsByClassName("aqi-chart-wrap")[0];
+
 /**
  * 渲染图表
  */
 function renderChart() {
-  var wrap = document.getElementsByClassName("aqi-chart-wrap")[0];
-  wrap.innerHTML = "";
+  chartWrap.innerHTML = "";
   var className = pageState.nowGraTime.toLowerCase();
 
-  console.log(chartData)
   var div = null;
   for(var t in chartData){
     var data = chartData[t];
@@ -85,18 +89,17 @@ function renderChart() {
     div.title = t + ': ' + data;
     div.className = className + ' ' + aqiCondition;
     div.style = "height: " + (parseInt(data) * 2) + "px;";
-    wrap.appendChild(div);
+    chartWrap.appendChild(div);
   }
 }
 
 /**
  * 日、周、月的radio事件点击时的处理函数
  */
-function graTimeChange() {
-  var radioInputs = document.getElementById("form-gra-time").getElementsByTagName("input");
-  for(var i = 0; i < radioInputs.length; i++){
-    // 确定是否选项发生了变化 
-    // imo: 其实调用本函数的时候利用 change 事件已经判读过了 OAO
+function graTimeChange(inputValue) {
+  // 确定是否选项发生了变化 
+  // imo: 其实调用本函数的时候利用 change 事件已经判读过了 OAO
+  /*for(var i = 0; i < radioInputs.length; i++){
     if(radioInputs[i].checked && radioInputs[i].value !== pageState.nowGraTime){
       // 设置对应数据
       pageState.nowGraTime = radioInputs[i].value;
@@ -108,20 +111,25 @@ function graTimeChange() {
       return true;
     }
   }
-  return false;
+  return false;*/
+  
+  // 设置对应数据
+  pageState.nowGraTime = inputValue;
+
+  // 调用图表渲染函数
+  initAqiChartData();
+  renderChart();
 }
 
 /**
  * select发生变化时的处理函数
  */
 function citySelectChange() {
-  var citySlt = document.getElementById("city-select");
   // 确定是否选项发生了变化 
   // imo: 其实调用本函数的时候利用 change 事件已经判读过了 OAO
-  if(citySlt.value !== pageState.nowSelectCity){
+  /*if(citySlt.value !== pageState.nowSelectCity){
     // 设置对应数据
     pageState.nowSelectCity = citySlt.value;
-    console.log("pageState.nowSelectCity: "+citySlt.value)
 
     // 调用图表渲染函数
     initAqiChartData();
@@ -130,20 +138,29 @@ function citySelectChange() {
     return true;
   }
   
-  return false;
+  return false;*/
+
+  // 设置对应数据
+  pageState.nowSelectCity = citySlt.value;
+
+  // 调用图表渲染函数
+  initAqiChartData();
+  renderChart();
 }
 
 /**
  * 初始化日、周、月的radio事件，当点击时，调用函数 graTimeChange
  */
 function initGraTimeForm() {
-  var radioInputs = document.getElementById("form-gra-time").getElementsByTagName("input");
-  for(var i = 0; i < radioInputs.length; i++){
+  /*for(var i = 0; i < radioInputs.length; i++){
     radioInputs[i].addEventListener("change", function(){
       graTimeChange();
-      console.log("radio changed!");
     }, false);
-  }
+  }*/
+  // 改用事件代理，以避开上面的循环绑定事件
+  inputFieldset.addEventListener("change", function(){
+    graTimeChange(event.target.value);
+  }, false);
 }
 
 /**
@@ -151,7 +168,6 @@ function initGraTimeForm() {
  */
 function initCitySelector() {
   // 读取 aqiSourceData 中的城市，然后设置 id 为 city-select 的下拉列表中的选项
-  var citySlt = document.getElementById("city-select");
   var cityOpt = null;
   for(var cityName in aqiSourceData){
     cityOpt = document.createElement("option");
@@ -162,7 +178,6 @@ function initCitySelector() {
   // 给select设置事件，当选项发生变化时调用函数citySelectChange
   citySlt.addEventListener("change", function(){
     citySelectChange();
-    console.log("slt changed!");
   }, false);
 }
 
@@ -175,7 +190,6 @@ function initAqiChartData() {
   chartData = {};
 
   var cityData = aqiSourceData[pageState.nowSelectCity];
-  //console.log(cityData)
   var t = pageState.nowGraTime;
 
   function saveAvg(name, dataArr){
@@ -187,7 +201,6 @@ function initAqiChartData() {
 
   if(t.toLowerCase() === "day"){
     chartData = cityData;
-    console.log("chartData changing...")
   }
   else if(t.toLowerCase() === "week"){
     var weekVal = [];
