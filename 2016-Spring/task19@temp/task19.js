@@ -42,6 +42,7 @@ var queue = (function() {
         }
         throw new Error("队列已达到 60 上限，请在添加元素之前删除元素~");
     };
+    
     return {
         toArray: function(){
             return data;
@@ -100,7 +101,8 @@ var queue = (function() {
 btns.addEventListener("click", function(e) {
     if (e.target.nodeName === "INPUT") {
         var funcName = e.target.id
-                        .replace("-i",'I').replace("-o",'O');// 这里有更好的解决方法么？？？
+                        //.replace("-i",'I').replace("-o",'O');// 这里有更好的解决方法么？？？
+                        .replace(/\-[a-z]/, function(str){ return str[1].toUpperCase(); })
         var value = input.value;
         try {
             queue[funcName](value).
