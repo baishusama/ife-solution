@@ -118,7 +118,7 @@ btns.addEventListener("click", function(e) {
 // 以此结合数组的 filter 方法来更新 queue
 ul.addEventListener("click", function(e) {
     if (e.target.nodeName === "LI") {
-        var index = parseInt([].indexOf.call(e.target.parentNode.children, e.target)); // !!
+        var index = parseInt([].indexOf.call(e.target.parentNode.children, e.target)); // [!!] 注意 .children 和 .childNodes 的区别
         try {
             queue.deleteElemAt(index)
                 .drawQueue();
