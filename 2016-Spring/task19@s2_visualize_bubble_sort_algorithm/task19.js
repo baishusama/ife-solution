@@ -100,7 +100,10 @@ var queue = (function() {
             res += '<li style="height:' + elem + 'px;" title="' + elem + '" class="' + clsName + '"></li>';
         });
         ul.innerHTML = res;
-    }
+    };
+    var toArray = function(){
+        return data;
+    };
     return {
         toArray: function() {
             return data;
@@ -219,13 +222,34 @@ var queue = (function() {
             var TIMESPACE = 100;
 
             for (var ordered = 1; ordered < data.length; ordered++) {
-                var insertPos = ordered;
-                for (; insertPos >= 0; insertPos--) { // 从后往前查找
-                    if (data[ordered] >= data[insertPos - 1] || insertPos === 0) {
+                // var insertPos = ordered;
+                (function(curPos) {
+                    setTimeout(function() {
+                        var insertPos = curPos;
+                        for (; insertPos > 0; insertPos--) { // 从后往前查找
+                            if (data[curPos] >= data[insertPos - 1]/* || insertPos === 0*/) {
+                                break;
+                            }
+                        }
+
+                        setOrderedStatusBefore(curPos);
+                        initDisorderedStatus();
+                        setStatus(curPos, 1);
+                        // setStatus(minIndex, 1);
+                        insertAt(curPos, insertPos);
+                        drawQueue();
+                    }, time);
+                })(ordered);
+                time += TIMESPACE;
+
+                // [!!NOTE] 像下面这样内层 for 包着 setTimeout / setTimeout 在内层 for 之后，存在 bug 。。
+                // for (; insertPos > 0; insertPos--) { // 从后往前查找
+                    // if (data[ordered] >= data[insertPos - 1]/* || insertPos === 0*/) {
                         /*(function(curPos, insPos) {
                             setTimeout(function() {
-                                console.log("ordered: " + curPos)
-                                console.log("\tshould insert at: " + insPos)
+                                console.log("data: "+toArray());
+                                console.log("\tordered: " + curPos)
+                                console.log("\t\tshould insert at: " + insPos)
                                     // debugger;
                                 setOrderedStatusBefore(curPos);
                                 initDisorderedStatus();
@@ -234,14 +258,16 @@ var queue = (function() {
                                 insertAt(curPos, insPos);
                                 drawQueue();
                             }, time);
-                        })(ordered, insertPos);*/
-                        insertAt(ordered, insertPos);
-                        drawQueue();
-                        break;
-                    }
-                }
-                console.log("ordered: " + ordered);
-                console.log("\tshould insert at: " + (insertPos + 1));
+                        })(ordered, insertPos);
+                        time += TIMESPACE;*/
+
+                        // insertAt(ordered, insertPos);
+                        // drawQueue();
+                        // break;
+                    // }
+                // }
+                // console.log("ordered: " + ordered);
+                // console.log("\tshould insert at: " + (insertPos + 1));
                 /*(function(curPos, insPos) {
                     setTimeout(function() {
                         console.log("ordered: "+curPos)
@@ -258,7 +284,7 @@ var queue = (function() {
                 /*insertAt(ordered, insertPos + 1);
                 drawQueue();*/
 
-                time += TIMESPACE;
+                // time += TIMESPACE;
             }
         }
     };
