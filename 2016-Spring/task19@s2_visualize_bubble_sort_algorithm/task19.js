@@ -243,6 +243,7 @@ var queue = (function() {
                 time += TIMESPACE;
 
                 // [!!NOTE] 像下面这样内层 for 包着 setTimeout / setTimeout 在内层 for 之后，存在 bug 。。
+
                 // for (; insertPos > 0; insertPos--) { // 从后往前查找
                     // if (data[ordered] >= data[insertPos - 1]/* || insertPos === 0*/) {
                         /*(function(curPos, insPos) {
@@ -266,6 +267,7 @@ var queue = (function() {
                         // break;
                     // }
                 // }
+
                 // console.log("ordered: " + ordered);
                 // console.log("\tshould insert at: " + (insertPos + 1));
                 /*(function(curPos, insPos) {
