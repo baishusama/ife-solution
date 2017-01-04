@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 20</title>
+    <style>
+        body {
+            font-family: 微软雅黑;
+        }
+
+        .panel {
+            padding: 10px;
+            background-color: #ddd;
+        }
+        /* .panel > input {
+            display: block;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border: 1px solid;
+            width: 100%;
+            padding: 0 10px;
+            font-size: 16px;
+            line-height: 24px;
+        } */
+        .panel > textarea {
+            padding: 0;
+            width: 100%;
+            font-size: 18px;
+            resize: none;
+            outline: none;
+        }
+
+        .btns {
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .btns input {
+            /*display: block;*/
+            flex-grow: 1;
+            margin: 0 3px;
+            border: none;
+            border-radius: 2px;
+            padding: 6px;
+            background-color: lightpink;
+        }
+
+        .search {
+            overflow: hidden;
+
+        }
+        .search input {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            display: block;
+            border: 0;
+            outline: none;
+        }
+        #queue-search {
+            float: left;
+            padding: 0 20px;
+            width: 70%;
+            line-height: 40px;
+        }
+        #search-btn {
+            float: left;
+            padding: 0;
+            width: 30%;
+            color: #fff;
+            background-color: orange;
+            line-height: 40px;
+        }
+
+        .queue {
+            overflow: hidden;
+            margin: 0;
+            padding: 10px;
+            background-color: #ccc;
+        }
+        .queue li {
+            float: left;
+            display: block;
+            margin: 3px;
+            padding: 6px 10px;
+            background-color: deeppink;
+            color: #fff;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <!-- <input type="text" id="queue-input" /> -->
+        <textarea name="queue-input" id="queue-input" rows="8"></textarea>
+        <div class="btns">
+            <input type="button" id="left-in" value="左侧入->|" />
+            <input type="button" id="right-in" value="右侧入|<-" />
+            <input type="button" id="left-out" value="左侧出<-|" />
+            <input type="button" id="right-out" value="右侧出|->" />
+        </div>
+        <div class="search">
+            <input type="text" id="queue-search" placeholder="请输入搜索内容.." />
+            <input type="button" id="search-queue" value="搜索内容" />
+        </div>
+    </div>
+    <ul class="queue">
+
+    </ul>
+    <script src="task20.js"></script>
+</body>
+</html>
