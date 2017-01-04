@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 20</title>
+    <style>
+        body {
+            font-family: 微软雅黑;
+        }
+
+        .panel {
+            padding: 10px;
+            background-color: #ddd;
+        }
+        .panel > input {
+            display: block;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border: 1px solid;
+            width: 100%;
+            padding: 0 10px;
+            font-size: 16px;
+            line-height: 24px;
+        }
+
+        .btns {
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .btns input {
+            /*display: block;*/
+            flex-grow: 1;
+            margin: 0 3px;
+            border: none;
+            border-radius: 2px;
+            padding: 6px;
+            background-color: lightpink;
+        }
+
+        .queue {
+            overflow: hidden;
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flex;
+            display: -o-flex;
+            display: flex;
+            align-items: flex-end;
+            margin: 0;
+            padding: 10px;
+            background-color: #eee;
+        }
+        .queue li {
+            float: left;
+            display: block;
+            margin: 3px;
+            width: 16px;
+            background-color: salmon;
+            color: #fff;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <input type="text" id="queue-input" />
+        <div class="btns">
+            <input type="button" id="left-in" value="左侧入->|" />
+            <input type="button" id="right-in" value="右侧入|<-" />
+            <input type="button" id="left-out" value="左侧出<-|" />
+            <input type="button" id="right-out" value="右侧出|->" />
+        </div>
+    </div>
+    <ul class="queue">
+
+    </ul>
+    <script src="task18_v2.js"></script>
+</body>
+</html>
