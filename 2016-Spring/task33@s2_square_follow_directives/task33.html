@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The little square following the directives</title>
+    <style>
+    body {
+        margin: 0;
+    }
+    
+    .panel {
+        padding: 1px;
+    }
+    
+    #board {
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        /*border: 2px solid;*/
+        padding: 39px;
+        width: 402px;
+        height: 402px;
+    }
+    
+    .grid {
+        float: left;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        width: 40px;
+        height: 40px;
+    }
+    /* [!!note] 注意 nth-child 里的 n 必须写在最前，否则不会生效 */
+    
+    .grid:nth-child(-n + 10) {
+        position: relative;
+        border-top-color: #000;
+        border-top-width: 2px;
+        height: 41px;
+    }
+    /* 添加数字 */
+    
+    .grid:nth-child(-n + 10):before {
+        position: absolute;
+        top: -24px;
+        left: 8px;
+        display: block;
+        /*content: '1';*/
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+    }
+    
+    .grid:nth-child(1):before {
+        content: '1';
+    }
+    
+    .grid:nth-child(2):before {
+        content: '2';
+    }
+    
+    .grid:nth-child(3):before {
+        content: '3';
+    }
+    
+    .grid:nth-child(4):before {
+        content: '4';
+    }
+    
+    .grid:nth-child(5):before {
+        content: '5';
+    }
+    
+    .grid:nth-child(6):before {
+        content: '6';
+    }
+    
+    .grid:nth-child(7):before {
+        content: '7';
+    }
+    
+    .grid:nth-child(8):before {
+        content: '8';
+    }
+    
+    .grid:nth-child(9):before {
+        content: '9';
+    }
+    
+    .grid:nth-child(10):before {
+        content: '10';
+    }
+    
+    .grid:nth-child(10n + 1) {
+        position: relative;
+        border-left-color: #000;
+        border-left-width: 2px;
+        width: 41px;
+    }
+    
+    .grid:nth-child(10n + 1):after {
+        position: absolute;
+        top: 8px;
+        left: -24px;
+        display: block;
+        /*content: '1';*/
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+    }
+    
+    .grid:nth-child(1):after {
+        content: '1';
+    }
+    
+    .grid:nth-child(11):after {
+        content: '2';
+    }
+    
+    .grid:nth-child(21):after {
+        content: '3';
+    }
+    
+    .grid:nth-child(31):after {
+        content: '4';
+    }
+    
+    .grid:nth-child(41):after {
+        content: '5';
+    }
+    
+    .grid:nth-child(51):after {
+        content: '6';
+    }
+    
+    .grid:nth-child(61):after {
+        content: '7';
+    }
+    
+    .grid:nth-child(71):after {
+        content: '8';
+    }
+    
+    .grid:nth-child(81):after {
+        content: '9';
+    }
+    
+    .grid:nth-child(91):after {
+        content: '10';
+    }
+    
+    .grid:nth-child(n + 91) {
+        border-bottom-color: #000;
+        border-bottom-width: 2px;
+        height: 41px;
+    }
+    
+    .grid:nth-child(10n) {
+        border-right-color: #000;
+        border-right-width: 2px;
+        width: 41px;
+    }
+    
+    #square {
+        position: absolute;
+        top: 200px;
+        left: 200px;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border-top: 8px solid salmon;
+        width: 40px;
+        height: 40px;
+        background-color: lightpink;
+        transition: all .5s;
+    }
+    /*#square.faceNorth {
+        transform: rotate(0deg);
+    }
+    #square.faceEast {
+        transform: rotate(90deg);
+    }
+    #square.faceWest {
+        transform: rotate(-90deg);
+    }
+    #square.faceSouth {
+        transform: rotate(180deg);
+    }*/
+    
+    #square:before,
+    #square:after {
+        position: absolute;
+        top: -6px;
+        display: block;
+        content: '\a0';
+        border-radius: 5px / 15px;
+        width: 10px;
+        height: 30px;
+        background-color: salmon;
+    }
+    
+    #square:before {
+        left: 6px;
+        transform: rotate(5deg);
+    }
+    
+    #square:after {
+        right: 6px;
+        transform: rotate(-5deg);
+    }
+    
+    .controller {
+      overflow: hidden;
+        padding: 24px 20%;
+    }
+    .controller input {
+      float: left;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      display: block;
+      margin: 0;
+      border-radius: 0;
+      padding: 0;
+    }
+    .controller input[type="text"] {
+      padding: 0 20px;
+      width: 65%;
+    }
+    .controller input[type="button"] {
+      width: 35%;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="panel">
+        <div id="board">
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div class="grid"></div>
+            <div id="square"></div>
+        </div>
+        <div class="controller">
+            <input type="text" id="directives" placeholder="请输入指令.." />
+            <input type="button" value="执行" />
+        </div>
+    </div>
+    <script src="task33.js"></script>
+</body>
+
+</html>
