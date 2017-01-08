@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The little square following the directives</title>
+    <style>
+    body {
+        margin: 0;
+    }
+    
+    .panel {
+        counter-reset: rowIndex;
+    }
+    
+    #board {
+        position: relative;
+        margin: 50px auto;
+        border: 2px solid;
+        width: 398px;
+        height: 398px;
+        counter-reset: colIndex;
+    }
+    
+    .grid {
+        position: relative;
+        float: left;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border-right: 2px solid #ddd;
+        border-bottom: 2px solid #ddd;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .grid.clearfix {
+        clear: both;
+    }
+    /* [!!note] 注意 nth-child 里的 n 必须写在最前，否则不会生效 */
+    /* 添加数字 */
+    
+    .grid:nth-child(-n + 10):before {
+        position: absolute;
+        top: -24px;
+        left: 8px;
+        display: block;
+        /* counter-reset by #board */
+        counter-increment: colIndex;
+        content: counter(colIndex);
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+    }
+    
+    .grid:nth-child(10n + 1):after {
+        position: absolute;
+        top: 8px;
+        left: -24px;
+        display: block;
+        /* counter-reset by .panel */
+        counter-increment: rowIndex;
+        content: counter(rowIndex);
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+    }
+    
+    .grid.downmost {
+        border-bottom: none;
+        height: 38px;
+    }
+    
+    .grid.rightmost {
+        border-right: none;
+        width: 38px;
+    }
+    
+    #square {
+        position: absolute;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border-top: 8px solid salmon;
+        width: 40px;
+        height: 40px;
+        background-color: lightpink;
+        transition: all .5s;
+    }
+    
+    #square:before,
+    #square:after {
+        position: absolute;
+        top: -6px;
+        display: block;
+        content: '\a0';
+        border-radius: 5px / 15px;
+        width: 10px;
+        height: 30px;
+        background-color: salmon;
+    }
+    
+    #square:before {
+        left: 6px;
+        transform: rotate(5deg);
+    }
+    
+    #square:after {
+        right: 6px;
+        transform: rotate(-5deg);
+    }
+    
+    .controller {
+        overflow: hidden;
+        margin: 0 auto;
+        width: 420px;
+    }
+    
+    .controller input {
+        float: left;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: block;
+        margin: 0;
+        border-radius: 0;
+        padding: 0;
+    }
+    
+    .controller input[type="text"] {
+        padding: 0 20px;
+        width: 65%;
+    }
+    
+    .controller input[type="button"] {
+        width: 35%;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="panel">
+        <div id="board">
+            <!-- div.grid*100 -->
+            <!-- <div id="square"></div> -->
+        </div>
+        <div class="controller">
+            <input type="text" id="directives" placeholder="请输入指令.." />
+            <input type="button" value="执行" />
+        </div>
+    </div>
+    <script src="task33_v2.js"></script>
+</body>
+
+</html>

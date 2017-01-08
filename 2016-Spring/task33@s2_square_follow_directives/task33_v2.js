@@ -34,16 +34,59 @@ function generateInlineStyle(degree) {
 }
 
 // DOM
-var squareDOM = document.getElementById("square");
+// var squareDOM = document.getElementById("square");
 var boardDOM = document.getElementById("board");
 var dirInputDOM = document.getElementById("directives");
 var dirInputBtnDOM = dirInputDOM.nextElementSibling;
 
+// 区域
+var board = (function() {
+    var ROW = 10;
+    var COLUMN = 10;
+    var bd = [];
+
+    var generateBoard = function() {
+        var cell = null;
+        for (var i = 0; i < ROW; i++) {
+            var rowTmp = [];
+            for (var j = 0; j < COLUMN; j++) {
+                cell = document.createElement("div");
+                cell.className = "grid";
+                if (j === 0) {
+                    cell.className += " clearfix";
+                } else if (j === 9) {
+                    cell.className += " rightmost";
+                }
+                if (i === 9) {
+                    cell.className += " downmost";
+                }
+                boardDOM.appendChild(cell);
+                rowTmp.push(0);
+            }
+            bd.push(rowTmp);
+        }
+    };
+    return {
+        generateBoard: function() {
+            generateBoard();
+        },
+        getRowNum: function() {
+            return ROW;
+        },
+        getColNum: function() {
+            return COLUMN;
+        },
+        getBoardState: function() {
+            return bd;
+        }
+    };
+})();
+
 // 小方块
 var square = (function() {
-    var sqPos = [5, 5];
-    var sqDir = 0;
-    // var DIRECTION = ["faceNorth", "faceEast", "faceSouth", "faceWest"];
+    var sqPos = { x: 1, y: 1 }; // default position // 1~10
+    var sqDir = 0; // default direction // 0,1,2,3
+    var squareDOM = null;
     var PROPERTY = getProperName("transform");
     console.log("当前浏览器支持的是 " + PROPERTY);
 
@@ -67,24 +110,31 @@ var square = (function() {
         return (sqDir % 4 + 4) % 4; // Any better way ???
     };
     var moveSqDOM = function() {
-        squareDOM.style.top = sqPos[1] * 40 + "px";
-        squareDOM.style.left = sqPos[0] * 40 + "px";
+        squareDOM.style.top = (sqPos.x - 1) * 40 - 1 + "px";
+        squareDOM.style.left = (sqPos.y - 1) * 40 - 1 + "px";
     };
     var tryMove = function(direction, pace) {
         var pace = pace || 1;
-        console.log(direction)
-        console.log(sqPos)
-        if (directionMod4() === 0 && sqPos[1] > 1) {
-            sqPos[1]--;
-        } else if (directionMod4() === 1 && sqPos[0] < 10) {
-            sqPos[0]++;
-        } else if (directionMod4() === 2 && sqPos[1] < 10) {
-            sqPos[1]++;
-        } else if (directionMod4() === 3 && sqPos[0] > 1) {
-            sqPos[0]--;
+
+        var furPos = sqPos;
+        if (directionMod4() === 0 && furPos.x > 1) {
+            furPos.x--;
+        } else if (directionMod4() === 1 && furPos.y < board.getColNum()) {
+            furPos.y++;
+        } else if (directionMod4() === 2 && furPos.x < board.getRowNum()) {
+            furPos.x++;
+        } else if (directionMod4() === 3 && furPos.y > 1) {
+            furPos.y--;
         } else {
-            throw new Error("抵达边界无法前进 XO");
+            throw new Error("抵达边界，无法前进 XO");
         }
+
+        if (board.getBoardState()[furPos.x - 1][furPos.y - 1] === 0) {
+            sqPos = furPos;
+        } else {
+            throw new Error("此方向存在障碍物，无法前进 XO");
+        }
+
         moveSqDOM();
     };
     var takeTurn = function(clockwise, degree) {
@@ -96,7 +146,6 @@ var square = (function() {
                 sqDir--;
             }
         } else if (degree === 180) {
-            console.log("turn 180 deg !!")
             sqDir += 2;
         }
 
@@ -110,28 +159,31 @@ var square = (function() {
     };
 
     return {
+        generateSquare: function() {
+            // get square random position and direction
+            sqPos.x = Math.ceil(Math.random() * 10);
+            sqPos.y = Math.ceil(Math.random() * 10);
+            sqDir = Math.floor(Math.random() * 4);
+
+            // generate dom
+            squareDOM = document.createElement("div");
+            squareDOM.id = "square";
+            moveSqDOM();
+            squareDOM.style[PROPERTY] = generateInlineStyle(90 * sqDir);
+            boardDOM.appendChild(squareDOM);
+        },
         go: function() {
             tryMove(sqDir);
         },
         tunlef: function() {
-            console.log("square should turn left..")
             takeTurn(false);
         },
         tunrig: function() {
-            console.log("square should turn right..")
             takeTurn(true);
         },
         tunbac: function() {
-            console.log("square should turn back..")
             takeTurn(true, 180);
         }
-    };
-})();
-
-var board = (function() {
-    var bd = [];
-    return {
-
     };
 })();
 
@@ -141,11 +193,11 @@ var getValidDirective = function(rawValue) {
         possibleValue.push(key);
     }
 
-    var value = rawValue.trim().replace(/\s/, '').toLowerCase();
+    var value = rawValue.trim().replace(/\s/g, '').toLowerCase();
     if (possibleValue.indexOf(value) > -1) {
         return value;
     }
-    throw new Error("非法指令，请重新尝试 :(");
+    throw new Error("非法指令，请重新尝试 :(\n合法的指令有如下：\n  GO\n  TUN LEF\n  TUN RIG\n  TUN BAC");
 };
 
 addEventHandler(dirInputBtnDOM, "click", function() {
@@ -157,4 +209,16 @@ addEventHandler(dirInputBtnDOM, "click", function() {
     }
 });
 
-window.onload = function() {};
+dirInputDOM.onkeydown = function(event) {
+    var e = event || window.event;
+    switch (e.keyCode) {
+        case 13:
+            dirInputBtnDOM.click(); /* 关于模拟点击事件触发的其他方法（better way???） */
+            break;
+    }
+};
+
+window.onload = function() {
+    board.generateBoard();
+    square.generateSquare();
+};
