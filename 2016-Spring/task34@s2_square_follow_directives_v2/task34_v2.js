@@ -142,24 +142,17 @@ var square = (function() {
 
         /* 就近转向 */
         // Any better way ???
-        var cwStep = 0,// 顺时针（clockwise）所需转向次数
-            anticwStep = 0;// 逆时针（anticlockwise）所需转向次数
+        var cwStep = 0;// 顺时针（clockwise）所需转向次数
         while (true) {
             if ((curDir + cwStep) % 4 === direction) {
                 break;
             }
             cwStep++;
         }
-        while (true) {
-            if ((curDir - anticwStep + 4) % 4 === direction) {
-                break;
-            }
-            anticwStep++;
-        }
 
         var deg = 0;
-        if (cwStep > anticwStep) {
-            deg = -anticwStep * 90;
+        if (cwStep > 2) {
+            deg = (cwStep - 4) * 90;
         } else {
             deg = cwStep * 90;
         }
