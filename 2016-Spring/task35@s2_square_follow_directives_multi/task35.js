@@ -36,8 +36,9 @@ function generateInlineStyle(degree) {
 // DOM
 // var squareDOM = document.getElementById("square");
 var boardDOM = document.getElementById("board");
-var dirInputDOM = document.getElementById("directives");
-var dirInputBtnDOM = dirInputDOM.nextElementSibling;
+var directivesDOM = document.getElementById("directives");
+var runBtnDOM = document.getElementsByClassName("run")[0];
+var refreshBtnDOM = document.getElementsByClassName("refresh")[0];
 
 // 区域
 var board = (function() {
@@ -231,31 +232,61 @@ var square = (function() {
     };
 })();
 
+// 代码编辑 textarea
+var codeArea = (function() {
+    var trmdVals = [];
+    //--------------here to be continued!-----------------
+    // var
+    return {};
+})();
+
 var getValidDirective = function(rawValue) {
-    var value = rawValue.trim().replace(/\s/g, '').toLowerCase();
-    if (square[value]) {
+    var values = rawValue.split("\n"); //.trim().replace(/\s/g, '').toLowerCase();
+    console.log("line's num: " + values.length)
+
+    // 去掉空白符 & 小写
+    var trimmedValues = values.map(function(elem, index) {
+        return elem.trim().replace(/\s/g, '').toLowerCase();
+    });
+
+    // 数组去重
+    var valueList = {};
+    var uniqueTrmdValues = [];
+    for (var i = 0; i < trimmedValues.length; i++) {
+        if (valueList[trimmedValues[i]] === undefined) {
+            valueList[trimmedValues[i]] = 1;
+            uniqueTrmdValues.push(trimmedValues[i]);
+        }/* else { valueList[trimmedValues[i]]++; }*/
+    }
+
+    uniqueTrmdValues.forEach(function(elem, index) {
+        // return
+    });
+    /*if (square[value]) {
         return value;
     }
-    throw new Error("非法指令，请重新尝试 :(\n合法的指令有如下：\n  GO\n  TUN LEF\n  TUN RIG\n  TUN BAC\n  TRA TOP\n  TRA RIG\n  TRA BOT\n  TRA LEF\n  MOV TOP\n  MOV RIG\n  MOV BOT\n  MOV LEF");
+    throw new Error("非法指令，请重新尝试 :(\n合法的指令有如下：\n  GO\n  TUN LEF\n  TUN RIG\n  TUN BAC\n  TRA TOP\n  TRA RIG\n  TRA BOT\n  TRA LEF\n  MOV TOP\n  MOV RIG\n  MOV BOT\n  MOV LEF");*/
 };
 
-addEventHandler(dirInputBtnDOM, "click", function() {
-    var rawValue = dirInputDOM.value;
+addEventHandler(runBtnDOM, "click", function() {
+    var rawValue = directivesDOM.value;
+    console.log(rawValue)
     try {
-        square[getValidDirective(rawValue)]();
+        getValidDirective(rawValue) // test
+            // square[getValidDirective(rawValue)]();
     } catch (e) {
         alert(e.message);
     }
 });
 
-dirInputDOM.onkeydown = function(event) {
+/*directivesDOM.onkeydown = function(event) {
     var e = event || window.event;
     switch (e.keyCode) {
         case 13:
-            dirInputBtnDOM.click(); /* 关于模拟点击事件触发的其他方法（better way???） */
+            dirInputBtnDOM.click(); // 关于模拟点击事件触发的其他方法（better way???）
             break;
     }
-};
+};*/
 
 window.onload = function() {
     board.generateBoard();

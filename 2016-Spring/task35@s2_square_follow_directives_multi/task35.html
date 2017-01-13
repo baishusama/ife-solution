@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>The little square following the directives</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class="panel">
+        <div id="board">
+            <!-- div.grid*100 -->
+            <!-- <div id="square"></div> -->
+        </div>
+        <div class="controller">
+            <div class="btnWrapper">
+                <input type="button" value="执行" class="run" />
+                <input type="button" value="Refresh" class="refresh" />
+            </div>
+            <div class="dirWrapper">
+                <label for="directives">
+                    <div class="lineNumWrapper">
+                        <ol id="lineNum">
+                            <li class="current"></li>
+                            <li class="errorLine"></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ol>
+                    </div>
+                    <textarea name="directives" id="directives" cols="30" rows="10"></textarea>
+                </label>
+                <!-- <input type="text" id="directives" /> -->
+            </div>
+        </div>
+    </div>
+    <sidebar id="cheatSheet">
+        <h4>Directive Cheat Sheet</h4>
+        <ul>
+            <li>GO - 前进</li>
+            <li>TUN LEF - 向左转</li>
+            <li>TUN RIG - 向右转</li>
+            <li>TUN BAC - 向后转</li>
+            <li>TRA TOP - 向上转并前进</li>
+            <li>TRA RIG - 向右转并前进</li>
+            <li>TRA BOT - 向下转并前进</li>
+            <li>TRA LEF - 向左转并前进</li>
+            <li>MOV TOP - 向上移动</li>
+            <li>MOV RIG - 向右移动</li>
+            <li>MOV BOT - 向下移动</li>
+            <li>MOV LEF - 向左移动</li>
+        </ul>
+        <p>其中，GO 命令、TRA 命令和 MOV 命令可以添加一个数字做为参数，用来制定移动的步数。</p>
+    </sidebar>
+    <script src="task35.js"></script>
+</body>
+
+</html>

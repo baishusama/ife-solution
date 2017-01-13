@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify input</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .main {
+      padding: 20px;
+      text-align: center;
+    }
+
+    label[for="name"] {
+      display: inline-block;
+      line-height: 22px;
+      vertical-align: top;
+    }
+
+    .wrapper {
+      position: relative;
+      display: inline-block;
+      height: 40px;
+    }
+
+    #name {
+      border: 1px solid #555;
+      border-radius: 3px;
+      padding: 0 6px;
+      width: 200px;
+      line-height: 20px;
+      outline: none;
+    }
+
+    #name.invalid {
+      border-color: red;
+    }
+
+    #name.valid {
+      border-color: yellowgreen;
+    }
+
+    .info {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      font-size: 12px;
+    }
+
+    #name.invalid + .info {
+      color: red;
+    }
+
+    #name.valid + .info {
+      color: yellowgreen;
+    }
+
+    #verify {
+      border: 1px solid steelblue;
+      border-radius: 3px;
+      padding: 0 6px;
+      background-color: steelblue;
+      color: #fff;
+      line-height: 20px;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+      <label for="name">用户名</label>
+      <div class="wrapper">
+        <input type="text" id="name" />
+        <span class="info">必填项。长度为 4 ~ 16 个字符。</span>  
+      </div>
+      <input type="button" id="verify" value="验证"/>
+  </div>
+  <script src="task29_v2.js"></script>
+</body>
+</html>
