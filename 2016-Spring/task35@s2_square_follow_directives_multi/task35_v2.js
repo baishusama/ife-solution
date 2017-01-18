@@ -207,8 +207,8 @@ var square = (function() {
             squareDOM.style[PROPERTY] = generateInlineStyle(90 * sqDir);
             boardDOM.appendChild(squareDOM);
         },
-        go: function() {
-            move();
+        go: function(step) {
+            move(undefined, step);
         },
         tunlef: function() {
             takeTurn(-90);
@@ -219,29 +219,29 @@ var square = (function() {
         tunbac: function() {
             takeTurn(180);
         },
-        tratop: function() {
-            move(0);
+        tratop: function(step) {
+            move(0, step);
         },
-        trarig: function() {
-            move(1);
+        trarig: function(step) {
+            move(1, step);
         },
-        trabot: function() {
-            move(2);
+        trabot: function(step) {
+            move(2, step);
         },
-        tralef: function() {
-            move(3);
+        tralef: function(step) {
+            move(3, step);
         },
-        movtop: function() {
-            move(0, 1, true);
+        movtop: function(step) {
+            move(0, step, true);
         },
-        movrig: function() {
-            move(1, 1, true);
+        movrig: function(step) {
+            move(1, step, true);
         },
-        movbot: function() {
-            move(2, 1, true);
+        movbot: function(step) {
+            move(2, step, true);
         },
-        movlef: function() {
-            move(3, 1, true);
+        movlef: function(step) {
+            move(3, step, true);
         },
     };
 })();
@@ -275,13 +275,11 @@ var codeArea = (function() {
 
     function autoSize() {
         var lineH = (directivesDOM.value.match(/\n/g) && directivesDOM.value.match(/\n/g).length + 1) || 1;
-        console.log("line should up to " + lineH)
         setLineNum(lineH);
     }
 
     function getDirectives() {
         var values = directivesDOM.value.split("\n"); //.trim().replace(/\s/g, '').toLowerCase();
-        console.log("line's num: " + values.length)
 
         // 去掉空白符 & 小写
         var trimmedValues = values.map(function(elem, index) {
@@ -291,12 +289,54 @@ var codeArea = (function() {
         return trimmedValues;
     }
 
-    function findError() {
+    function getNonEmptyDirectives(directives) {
+        var values = directives || getDirectives();
+        console.log("Before NonEmp, values: ")
+        console.log(values)
+        return values.filter(function(elem) {
+            // return /^\S+$/.test(elem);
+            return elem; // [!!NOTE] this VS elem
+        });
+    }
+
+    function checkOneDirective(directive) {
+        var res = [];
+        var name = "";
+        var step = 0;
+        if (!/^[a-z]+\d*$/.test(directive)) {
+            return false;
+        } else {
+            name = directive.match(/[a-z]+/)[0];
+            if (!square[name]) {
+                return false;
+            }
+
+            // [!!NOTE] 注意这里用 + 而不能是 * ：星号总能匹配到空字符串，而加号能匹配到 null 或者数字字符串
+            // [!!NOTE] 注意下两行中的 && 和 || 
+            var temp = directive.match(/\d+/) && directive.match(/\d+/)[0]; // e.g.1 null && ~ -> null | ["1"] && "1" -> "1"
+            step = parseInt(temp) || 0; // 当值为 null 时，得到 NaN 。NaN || 0 -> 0
+            /*
+            step = parseInt(temp);
+            if (isNaN(step)) {
+                step = 0;
+            }
+            */
+
+            res = [name, step];
+
+            return res;
+        }
+    }
+
+    function findError(directives) {
+        // 默认不带参数到时候，会检查和输入等量的指令
+        // 如果带了参数，可以减少重复计算；
+        // 或者检查非空指令集
         var errorLine = [];
-        var values = getDirectives();
+        var values = directives || getDirectives();
 
         for (var i = 0; i < values.length; i++) {
-            if (values[i] && !square[values[i]]) { // 非空行
+            if (values[i] && !checkOneDirective(values[i])) { // 非空行
                 errorLine.push(i);
             }
         }
@@ -327,13 +367,72 @@ var codeArea = (function() {
             addEventHandler(directivesDOM, "keydown", autoSizeAndCheck);
             addEventHandler(directivesDOM, "keyup", autoSizeAndCheck);
             autoSize();
+        },
+        runDirectives: function() {
+            var values = getNonEmptyDirectives();
+            console.log("After NonEmp, values: ")
+            console.log(values)
+
+            var time = 0;
+            var TIMESPACE = 500;
+            var self = this;
+            var stIDs = [];
+            var tempID = null;
+
+            if (findError(values).length) {
+                throw new Error("You still have some errors in your directives. Please correct them first!\n(Valid directives are presented in Cheat-Sheet top right.)")
+            }
+            // else
+            for (var i = 0; i < values.length; i++) {
+                // window.setTimeout(function() {}, );
+                console.log("NonEmpQueue-" + i + ": " + checkOneDirective(values[i]));
+
+                // 闭包 Way 1
+                tempID = window.setTimeout(function(index) {
+                    var arr = checkOneDirective(values[index]);
+                    var name = arr[0];
+                    var step = arr[1];
+                    try {
+                        square[name](step);
+                    } catch (e) {
+                        console.log("whoooops...");
+                        console.log(stIDs);
+                        stIDs.slice(index + 1).forEach(function(elem) {
+                            window.clearTimeout(elem);
+                        });
+
+                        console.log(e.message);
+                        // alert(e.message);
+                    }
+                }(i), time);
+                console.log("tempID is:")
+                console.log(tempID)
+                stIDs.push(tempID);
+
+                // 闭包 Way 2
+                /*
+                (function(index) {
+                    window.setTimeout(function() {
+                        var arr = checkOneDirective(values[index]);
+                        var name = arr[0];
+                        var step = arr[1];
+                        try {
+                            square[name](step);
+                        } catch (e) {
+                            alert(e.message);
+                        }
+                    }, time);
+                })(i);
+                */
+
+                time += TIMESPACE;
+            }
         }
     };
 })();
 
 var getValidDirective = function(rawValue) {
     var values = rawValue.split("\n"); //.trim().replace(/\s/g, '').toLowerCase();
-    console.log("line's num: " + values.length)
 
     // 去掉空白符 & 小写
     var trimmedValues = values.map(function(elem, index) {
@@ -360,14 +459,17 @@ var getValidDirective = function(rawValue) {
 };
 
 addEventHandler(runBtnDOM, "click", function() {
-    var rawValue = directivesDOM.value;
-    console.log(rawValue)
+    // 原本的 try-catch 是写在这里的，但是由于 setTimeout 方法对线程的破坏（阻塞？无视？？）
+    // 将 try-catch 移到每个单独的 setTimeout 方法内部
     try {
-        getValidDirective(rawValue) // test
-            // square[getValidDirective(rawValue)]();
+        console.log("Which one is the first?")
+        codeArea.runDirectives();
+        console.log("try{}'s end.")
     } catch (e) {
         alert(e.message);
     }
+    console.log("event's end")
+    console.log("-------------")
 });
 
 /*directivesDOM.onkeydown = function(event) {
