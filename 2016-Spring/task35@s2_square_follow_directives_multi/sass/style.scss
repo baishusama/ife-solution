@@ -52,6 +52,7 @@ body {
         height: 24px;
         line-height: 24px;
         text-align: center;
+        font-family: Helvetica;
     }
     &:nth-child(10n + 1):after {
         position: absolute;
@@ -65,6 +66,7 @@ body {
         height: 24px;
         line-height: 24px;
         text-align: center;
+        font-family: Helvetica;
     }
     &.downmost {
         border-bottom: none;
@@ -133,7 +135,7 @@ body {
             padding: 6px 0;
             width: 45%;
             background-color: steelblue;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             &.run {
                 float: left;
             }
@@ -173,10 +175,14 @@ body {
                         font-family: Consolas;
                         line-height: 20px;
                     }
-                    /* &.current {
+                    &.current {
                         // 当前行高亮显示
                         background-color: aliceblue;
-                    } */
+                    }
+                    &.stop {
+                        // 顺序执行截止行
+                        background-color: indianred;
+                    }
                     &.errorLine:after {
                         // 会呼吸的报错小圆点
                         position: absolute;
@@ -274,8 +280,10 @@ body {
     right: 0;
     max-width: 240px;
     background-color: rgba(0, 0, 0, .2);
+    font-family: Consolas;
     h4 {
         text-align: center;
+        font-family: Helvetica;
     }
     ul {
         padding: 0 20px 0 30px;

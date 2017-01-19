@@ -43,7 +43,8 @@ body {
     width: 24px;
     height: 24px;
     line-height: 24px;
-    text-align: center; }
+    text-align: center;
+    font-family: Helvetica; }
   .grid:nth-child(10n + 1):after {
     position: absolute;
     top: 8px;
@@ -55,7 +56,8 @@ body {
     width: 24px;
     height: 24px;
     line-height: 24px;
-    text-align: center; }
+    text-align: center;
+    font-family: Helvetica; }
   .grid.downmost {
     border-bottom: none;
     height: 38px; }
@@ -139,17 +141,17 @@ body {
         .controller .dirWrapper label ol li {
           position: relative;
           padding: 0 5px;
-          list-style: none;
-          /* &.current {
-              // 当前行高亮显示
-              background-color: aliceblue;
-          } */ }
+          list-style: none; }
           .controller .dirWrapper label ol li:before {
             display: block;
             counter-increment: lineNum;
             content: counter(lineNum);
             font-family: Consolas;
             line-height: 20px; }
+          .controller .dirWrapper label ol li.current {
+            background-color: aliceblue; }
+          .controller .dirWrapper label ol li.stop {
+            background-color: indianred; }
           .controller .dirWrapper label ol li.errorLine:after {
             position: absolute;
             top: 50%;
@@ -216,9 +218,11 @@ body {
   top: 0;
   right: 0;
   max-width: 240px;
-  background-color: rgba(0, 0, 0, 0.2); }
+  background-color: rgba(0, 0, 0, 0.2);
+  font-family: Consolas; }
   #cheatSheet h4 {
-    text-align: center; }
+    text-align: center;
+    font-family: Helvetica; }
   #cheatSheet ul {
     padding: 0 20px 0 30px;
     font-size: 14px; }

@@ -44,6 +44,29 @@ function $(selector) {
     return elem;
 }
 
+// 用于添加类名
+function addClassName(elem, clsname) {
+    var names = elem.className.split(/\s/);
+    var index = names.indexOf(clsname);
+    if (index === -1) {
+        names.push(clsname);
+        elem.className = names.join(' ');
+        return true;
+    }
+    return false;
+}
+// 用于删除类名
+function removeClassName(elem, clsname) {
+    var names = elem.className.split(/\s/);
+    var index = names.indexOf(clsname);
+    if (index !== -1) {
+        names.splice(index, 1);
+        elem.className = names.join(' ');
+        return true;
+    }
+    return false;
+}
+
 // DOM
 // var squareDOM = document.getElementById("square");
 var boardDOM = $("#board");
@@ -246,40 +269,41 @@ var square = (function() {
     };
 })();
 
-// 代码编辑 textarea - Part 1
-/*(function() {
-    function autoSize() {
-        var lineH = directivesDOM.value.match(/\n/g).length;
-
-    }
-})();*/
-
-// 代码编辑 textarea - Part 2
+// 代码编辑 textarea
 var codeArea = (function() {
     // DOM: directivesDOM
     var lineNumDOM = $("#lineNum");
     var trmdVals = [];
     var rows = 1;
-    var executable = 0; // nothing to execute
+    // var executable = 0; // nothing to execute
     // var VALIDKEYCODE = []
 
-    function setLineNum(num) {
-        var i = 0;
-        while (lineNumDOM.children.length < num) {
-            lineNumDOM.appendChild(document.createElement("li"));
+    function resetHighlightLine(clsnames) {
+        function removeClassNames(elem) {
+            for (var i = 0; i < clsnames.length; i++) {
+                removeClassName(elem, clsnames[i]);
+            }
         }
-        while (lineNumDOM.children.length > num) {
-            lineNumDOM.lastElementChild.remove();
+        for (var i = 0; i < lineNumDOM.children.length; i++) {
+            removeClassNames(lineNumDOM.children[i]);
+            // removeClassName(lineNumDOM.children[i], "current");
+            // removeClassName(lineNumDOM.children[i], "stop");
         }
     }
 
-    function autoSize() {
-        var lineH = (directivesDOM.value.match(/\n/g) && directivesDOM.value.match(/\n/g).length + 1) || 1;
-        setLineNum(lineH);
+    function highlightCurLine(index) {
+        resetHighlightLine(["current"]);
+        addClassName(lineNumDOM.children[index], "current");
+    }
+
+    function highlightRunTimeErrorLine(index) {
+        var curElem = lineNumDOM.children[index];
+        removeClassName(curElem, "current");
+        addClassName(curElem, "stop");
     }
 
     function getDirectives() {
-        var values = directivesDOM.value.split("\n"); //.trim().replace(/\s/g, '').toLowerCase();
+        var values = directivesDOM.value.split("\n");
 
         // 去掉空白符 & 小写
         var trimmedValues = values.map(function(elem, index) {
@@ -313,7 +337,7 @@ var codeArea = (function() {
 
             // [!!NOTE] 注意这里用 + 而不能是 * ：星号总能匹配到空字符串，而加号能匹配到 null 或者数字字符串
             // [!!NOTE] 注意下两行中的 && 和 || 
-            var temp = directive.match(/\d+/) && directive.match(/\d+/)[0]; // e.g.1 null && ~ -> null | ["1"] && "1" -> "1"
+            var temp = directive.match(/\d+/) && directive.match(/\d+/)[0]; // e.g. null && ~ -> null | ["1"] && "1" -> "1"
             step = parseInt(temp) || 0; // 当值为 null 时，得到 NaN 。NaN || 0 -> 0
             /*
             step = parseInt(temp);
@@ -323,7 +347,6 @@ var codeArea = (function() {
             */
 
             res = [name, step];
-
             return res;
         }
     }
@@ -336,7 +359,7 @@ var codeArea = (function() {
         var values = directives || getDirectives();
 
         for (var i = 0; i < values.length; i++) {
-            if (values[i] && !checkOneDirective(values[i])) { // 非空行
+            if (values[i] && !checkOneDirective(values[i])) { // 非空行，且未通过 check 的
                 errorLine.push(i);
             }
         }
@@ -352,6 +375,21 @@ var codeArea = (function() {
                 lineNumDOM.children[i].className = "";
             }
         }
+    }
+
+    function setLineNum(num) {
+        var i = 0;
+        while (lineNumDOM.children.length < num) {
+            lineNumDOM.appendChild(document.createElement("li"));
+        }
+        while (lineNumDOM.children.length > num) {
+            lineNumDOM.lastElementChild.remove();
+        }
+    }
+
+    function autoSize() {
+        var lineH = (directivesDOM.value.match(/\n/g) && (directivesDOM.value.match(/\n/g).length + 1)) || 1;
+        setLineNum(lineH);
     }
 
     function autoSizeAndCheck(e) {
@@ -374,7 +412,7 @@ var codeArea = (function() {
             console.log(values)
 
             var time = 0;
-            var TIMESPACE = 500;
+            var TIMESPACE = 800;
             var self = this;
             var stIDs = [];
             var tempID = null;
@@ -387,31 +425,18 @@ var codeArea = (function() {
                 // window.setTimeout(function() {}, );
                 console.log("NonEmpQueue-" + i + ": " + checkOneDirective(values[i]));
 
-                // 闭包 Way 1
-                tempID = window.setTimeout(function(index) {
-                    var arr = checkOneDirective(values[index]);
-                    var name = arr[0];
-                    var step = arr[1];
-                    try {
-                        square[name](step);
-                    } catch (e) {
-                        console.log("whoooops...");
-                        console.log(stIDs);
-                        stIDs.slice(index + 1).forEach(function(elem) {
-                            window.clearTimeout(elem);
-                        });
-
-                        console.log(e.message);
-                        // alert(e.message);
-                    }
-                }(i), time);
-                console.log("tempID is:")
-                console.log(tempID)
-                stIDs.push(tempID);
-
-                // 闭包 Way 2
+                // 闭包 Way 1 - 无法达到 setTimeout 的效果
+                // [!!NOTE] :( 问题出在，对传给 setTimeout 函数的回调函数的立即调用上 Orz
                 /*
-                (function(index) {
+                tempID = window.setTimeout(function(index) {
+                    // Do sth...
+                }(i), time);
+                stIDs.push(tempID);
+                */
+
+                // 闭包 Way 2(ver1) - 无法取消 setTimeout 队列（？）
+
+                /*(function(index) {
                     window.setTimeout(function() {
                         var arr = checkOneDirective(values[index]);
                         var name = arr[0];
@@ -422,23 +447,48 @@ var codeArea = (function() {
                             alert(e.message);
                         }
                     }, time);
+                })(i);*/
+
+                // 闭包 Way 2(ver2) - 尝试达到 setTimeout
+                tempID = (function(index) {
+                    return window.setTimeout(function() {
+                        var arr = checkOneDirective(values[index]);
+                        var name = arr[0];
+                        var step = arr[1];
+
+                        try {
+                            highlightCurLine(index);
+                            square[name](step);
+                        } catch (e) {
+                            highlightRunTimeErrorLine(index);
+
+                            // console.log("whoooops...");
+                            // console.log(stIDs);
+                            stIDs.slice(index + 1).forEach(function(elem) {
+                                window.clearTimeout(elem);
+                                console.log("clear----clear----clear")
+                            });
+
+                            // console.log(e.message);
+                            alert(e.message);
+                        }
+                    }, time);
                 })(i);
-                */
+                stIDs.push(tempID);
 
                 time += TIMESPACE;
             }
+        },
+        refresh: function() {
+            resetHighlightLine(["current", "stop", "errorLine"]);
+            directivesDOM.value = "";
+            directivesDOM.focus();
+            autoSize();
         }
     };
 })();
 
-var getValidDirective = function(rawValue) {
-    var values = rawValue.split("\n"); //.trim().replace(/\s/g, '').toLowerCase();
-
-    // 去掉空白符 & 小写
-    var trimmedValues = values.map(function(elem, index) {
-        return elem.trim().replace(/\s/g, '').toLowerCase();
-    });
-
+/*var getValidDirective = function(whatever) {
     // 数组去重
     var valueList = {};
     var uniqueTrmdValues = [];
@@ -446,30 +496,29 @@ var getValidDirective = function(rawValue) {
         if (valueList[trimmedValues[i]] === undefined) {
             valueList[trimmedValues[i]] = 1;
             uniqueTrmdValues.push(trimmedValues[i]);
-        } /* else { valueList[trimmedValues[i]]++; }*/
+        } else {
+            valueList[trimmedValues[i]]++;
+        }
     }
-
-    uniqueTrmdValues.forEach(function(elem, index) {
-        // return
-    });
-    /*if (square[value]) {
-        return value;
-    }
-    throw new Error("非法指令，请重新尝试 :(\n合法的指令有如下：\n  GO\n  TUN LEF\n  TUN RIG\n  TUN BAC\n  TRA TOP\n  TRA RIG\n  TRA BOT\n  TRA LEF\n  MOV TOP\n  MOV RIG\n  MOV BOT\n  MOV LEF");*/
-};
+};*/
 
 addEventHandler(runBtnDOM, "click", function() {
     // 原本的 try-catch 是写在这里的，但是由于 setTimeout 方法对线程的破坏（阻塞？无视？？）
     // 将 try-catch 移到每个单独的 setTimeout 方法内部
-    try {
-        console.log("Which one is the first?")
-        codeArea.runDirectives();
-        console.log("try{}'s end.")
-    } catch (e) {
-        alert(e.message);
-    }
-    console.log("event's end")
-    console.log("-------------")
+    /*try {*/
+    // console.log("Which one is the first?")
+    codeArea.runDirectives();
+    // console.log("try{}'s end.")
+    /*}*/
+    /*catch (e) {
+       alert(e.message);
+    }*/
+    // console.log("event handler's end")
+    // console.log("-------------")
+});
+
+addEventHandler(refreshBtnDOM, "click", function() {
+    codeArea.refresh();
 });
 
 /*directivesDOM.onkeydown = function(event) {
@@ -485,4 +534,5 @@ window.onload = function() {
     board.generate();
     square.generate();
     codeArea.initialize();
+    directivesDOM.focus();
 };
