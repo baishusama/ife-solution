@@ -34,7 +34,7 @@ body {
     border-bottom: 2px solid #ddd;
     width: 40px;
     height: 40px;
-    background-color: mistyrose;
+    background-color: #fff;
     &.clearfix {
         clear: both;
     }
@@ -75,6 +75,10 @@ body {
     &.rightmost {
         border-right: none;
         width: 38px;
+    }
+    &.hasWall {
+        // background-color: gray;
+        background: linear-gradient(-45deg, #fb3 25%, #2a2b2c 0, #2a2b2c 50%, #fb3 0, #fb3 75%, #2a2b2c 0);
     }
 }
 
@@ -132,25 +136,26 @@ body {
         margin-bottom: 10px;
         width: 500px;
         input {
+            float: left;
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
             box-sizing: border-box;
             display: block;
             margin: 0;
+            margin-right: 2%;
             border: 1px solid;
             border-radius: 3px;
             padding: 6px 0;
-            width: 45%;
+            width: 32%;
             background-color: $curLineBgc;
             color: rgba(255, 255, 255, 0.8);
-            &.run {
-                float: left;
-            }
             &.refresh {
-                float: right;
                 border-color: $curLineBgc;
                 background-color: #FFF;
                 color: $curLineBgc;
+            }
+            &.buildRandomWall {
+                margin: 0;
             }
         }
     }

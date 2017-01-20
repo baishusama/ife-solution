@@ -67,12 +67,59 @@ function removeClassName(elem, clsname) {
     return false;
 }
 
+// 简易的深拷贝
+function deepCopy(obj) {
+    var newObj = {};
+    for (var key in obj) {
+        if (typeof obj[key] === 'object') { // array should split ???
+            newObj[key] = deepCopy(obj[key]);
+        } else {
+            newObj[key] = obj[key];
+        }
+    }
+    return newObj;
+}
+
 // DOM
 // var squareDOM = document.getElementById("square");
 var boardDOM = $("#board");
 var directivesDOM = $("#directives");
 var runBtnDOM = $(".run")[0];
 var refreshBtnDOM = $(".refresh")[0];
+var randomBtnDOM = $(".buildRandomWall")[0];
+
+var ERRORMSG = {
+    "movToBoundary": {
+        "name": "mov_to_boundary",
+        "message": "将抵达边界，无法继续前进 XO",
+        "way": "alert"
+    },
+    "movToWall": {
+        "name": "mov_to_wall",
+        "message": "此方向存在墙，无法继续前进 XO",
+        "way": "alert"
+    },
+    "buildAtBoundary": {
+        "name": "build_at_boundary",
+        "message": "前方是边界处，无法修墙 XO",
+        "way": "console"
+    },
+    "buildAtWall": {
+        "name": "build_at_wall",
+        "message": "前方已存在墙，无法修墙 XO",
+        "way": "console"
+    },
+    "brushAtBoundary": {
+        "name": "brush_at_boundary",
+        "message": "前方是边界处，无法刷墙 XO",
+        "way": "console"
+    },
+    "brushAtEmpty": {
+        "name": "brush_at_empty",
+        "message": "前方没有墙，无法刷墙 XO",
+        "way": "console"
+    }
+};
 
 // 区域
 var board = (function() {
@@ -102,6 +149,37 @@ var board = (function() {
         }
     };
 
+    var getBluePrint = function() {
+        var WALL_HORIZENAL = "------------\n";
+        var str = WALL_HORIZENAL;
+        for (var i = 0; i < bd.length; i++) {
+            str += '|';
+            for (var j = 0; j < bd[0].length; j++) {
+                if (bd[i][j] === 0) {
+                    str += 'O';
+                } else {
+                    str += 'X';
+                }
+            }
+            str += '|\n';
+        }
+        str += WALL_HORIZENAL;
+        return str;
+    };
+
+    var getStateAt = function(x, y) {
+        return bd[x][y];
+    };
+
+    var setStateAt = function(x, y) {
+        bd[x][y] = 1;
+        addClassName(boardDOM.children[x * 10 + y], "hasWall");
+    };
+
+    var brushWallAt = function(x, y, color) {
+        boardDOM.children[x * 10 + y].style.backgroundColor = color;
+    };
+
     return {
         generate: function() {
             generateBoard();
@@ -114,6 +192,60 @@ var board = (function() {
         },
         getBoardState: function() {
             return bd;
+        },
+        isClearAt: function(x, y) {
+            return !getStateAt(x, y);
+        },
+        /*isClearLine: function(pos1, pos2) {
+            var x = y = i = 0;
+            if (pos1[0] === pos2[0]) {
+                x = pos1[0];
+                for (i = Math.min(pos1[1], pos2[1]); i <= Math.max(pos1[1], pos2[1]); i++) {
+                    if (getStateAt(x, i)) {
+                        return false;
+                    }
+                }
+            } else if (pos1[1] === pos2[1]) {
+                y = pos1[1];
+                for (i = Math.min(pos1[0], pos2[0]); i <= Math.max(pos1[0], pos2[0]); i++) {
+                    if (getStateAt(i, y)) {
+                        return false;
+                    }
+                }
+            } else {
+                console.log("The two position is not in a line :(");
+            }
+            return true;
+        },*/
+        printIncludeSq: function(sqPosition) {
+            var sqPos = sqPosition || square.getCurPos();
+            var x = sqPos.x;
+            var y = sqPos.y;
+
+            var SQARROW = ['↑', '→', '↓', '←'];
+            var sqStr = SQARROW[square.getCurDir()];
+
+            var str = getBluePrint();
+            var lines = str.split('\n');
+            lines[x] = lines[x].slice(0, y) + sqStr + lines[x].slice(y + 1, 12);
+            console.log(lines.join('\n'));
+        },
+        setWallAt: function(x, y) {
+            setStateAt(x, y);
+        },
+        setRandomWall: function() {
+            var random = Math.floor(Math.random() * 100);
+            var x = Math.floor(random / 10);
+            var y = random % 10;
+            while (getStateAt(x, y)) {
+                random = Math.floor(Math.random() * 100);
+                x = Math.floor(random / 10);
+                y = random % 10;
+            }
+            setStateAt(x, y);
+        },
+        brush: function(x, y, color) {
+            brushWallAt(x, y, color);
         }
     };
 })();
@@ -141,41 +273,86 @@ var square = (function() {
     };
 
     // 返回小方块将抵达的位置
-    var traDir = function(direction, pace) {
-        var furPos = sqPos; // [!!MISTAKE] 这里不应该使用浅拷贝，应该是用深拷贝，改法参见 task36
-        if (direction === 0 && furPos.x >= pace + 1) {
-            furPos.x -= pace;
-        } else if (direction === 1 && furPos.y <= board.getColNum() - pace) {
-            furPos.y += pace;
-        } else if (direction === 2 && furPos.x <= board.getRowNum() - pace) {
-            furPos.x += pace;
-        } else if (direction === 3 && furPos.y >= pace + 1) {
-            furPos.y -= pace;
-        } else {
-            throw new Error("将抵达边界，无法继续前进 XO");
+    var getFurPos = function(direction, pace) {
+        var dir = (typeof direction === "number") ? direction : directionMod4(sqDir); // direction can be 0
+        var pac = pace || 1;
+        var furPos = deepCopy(sqPos);
+
+        if (dir === 0) { // && furPos.x >= pac + 1
+            furPos.x -= pac;
+        } else if (dir === 1) { // && furPos.y <= board.getColNum() - pac
+            furPos.y += pac;
+        } else if (dir === 2) { // && furPos.x <= board.getRowNum() - pac
+            furPos.x += pac;
+        } else if (dir === 3) { // && furPos.y >= pac + 1
+            furPos.y -= pac;
         }
+        /*
+        else {
+            return false;
+        }
+        */
+
         return furPos;
     };
 
-    // 尝试移动小方块，当“抵达边界”或“存在障碍物”时报错，否则返回 true
+    var isPosValid = function(position) {
+        if (position.x >= 1 && position.x <= 10 && position.y >= 1 && position.y <= 10) {
+            return true;
+        }
+        return false;
+    }
+
+    // 尝试移动小方块，当“抵达边界”或“存在墙”时报错，否则返回 true
     var tryMove = function(direction, pace) {
-        var pac = pace || 1;
-        var dir = (typeof direction === "number") ? direction : directionMod4(sqDir); // direction can be 0
+        var furPos = getFurPos(direction, pace);
+        if (!isPosValid(furPos)) {
+            throw ERRORMSG.movToBoundary;
+        }
 
-        var furPos = traDir(dir, pac); // [!!MISTAKE] 在 traDir 函数内部因为使用了浅拷贝导致只要非边界，furPos 总是更新到 sqPos
+        //if (!board.isClearLine([sqPos.x - 1, sqPos.y - 1], [furPos.x - 1, furPos.y - 1])) {
+        if (!board.isClearAt(furPos.x - 1, furPos.y - 1)) {
+            throw ERRORMSG.movToWall;
+        }
 
-        // [!!MISTAKE] 在 traDir 函数内部因为使用了浅拷贝导致只要非边界，furPos 总是更新到 sqPos
-        if (board.getBoardState()[furPos.x - 1][furPos.y - 1] === 0) {
-            sqPos = furPos;
-        } else {
-            throw new Error("此方向存在障碍物，无法继续前进 XO");
+        sqPos = furPos;
+        return true;
+    };
+
+    // 尝试修墙，当“抵达边界”或“存在墙”时报错，否则返回 true
+    var tryBuild = function(furPos) {
+        var furPos = furPos || getFurPos();
+
+        if (!isPosValid(furPos)) {
+            throw ERRORMSG.buildAtBoundary;
+        }
+
+        //if (!board.isClearLine([sqPos.x - 1, sqPos.y - 1], [furPos.x - 1, furPos.y - 1])) {
+        if (!board.isClearAt(furPos.x - 1, furPos.y - 1)) {
+            throw ERRORMSG.buildAtWall;
+        }
+
+        return true;
+    }
+
+    // 尝试粉刷墙，当前方无墙时报错，否则返回 true
+    var tryBrush = function(furPos) {
+        var furPos = furPos || getFurPos();
+
+        if (!isPosValid(furPos)) {
+            throw ERRORMSG.brushAtBoundary;
+        }
+
+        //if (!board.isClearLine([sqPos.x - 1, sqPos.y - 1], [furPos.x - 1, furPos.y - 1])) {
+        if (board.isClearAt(furPos.x - 1, furPos.y - 1)) {
+            throw ERRORMSG.brushAtEmpty;
         }
 
         return true;
     };
 
     // 返回转到某方向的最小角度
-    var turnTo = function(direction) {
+    var degreesTo = function(direction) {
         var curDir = directionMod4(sqDir); // 小方块的当前朝向
         // if(curDir === direction) return 0;
 
@@ -211,7 +388,7 @@ var square = (function() {
     var move = function(direction, pace, isMOV) {
         if (tryMove(direction, pace)) {
             if (isMOV) { // 如果是 MOV 指令，在移动前，先转向
-                takeTurn(turnTo(direction));
+                takeTurn(degreesTo(direction));
             }
             moveSqDOM();
         }
@@ -230,6 +407,12 @@ var square = (function() {
             moveSqDOM();
             squareDOM.style[PROPERTY] = generateInlineStyle(90 * sqDir);
             boardDOM.appendChild(squareDOM);
+        },
+        getCurPos: function() {
+            return sqPos;
+        },
+        getCurDir: function() {
+            return directionMod4(sqDir);
         },
         go: function(step) {
             move(undefined, step);
@@ -267,6 +450,21 @@ var square = (function() {
         movlef: function(step) {
             move(3, step, true);
         },
+        build: function() {
+            var furPos = getFurPos();
+            if (tryBuild(furPos)) { // 如果能移动，那么也就能砌墙
+                board.setWallAt(furPos.x - 1, furPos.y - 1);
+            }
+        },
+        bru: function(color) {
+            var furPos = getFurPos();
+            if (tryBrush(furPos)) {
+                board.brush(furPos.x - 1, furPos.y - 1, color);
+            }
+        },
+        movto: function(position) {
+
+        }
     };
 })();
 
@@ -316,8 +514,6 @@ var codeArea = (function() {
 
     function getNonEmptyDirectives(directives) {
         var values = directives || getDirectives();
-        console.log("Before NonEmp, values: ")
-        console.log(values)
         return values.filter(function(elem) {
             // return /^\S+$/.test(elem);
             return elem; // [!!NOTE] this VS elem
@@ -328,9 +524,8 @@ var codeArea = (function() {
         var res = [];
         var name = "";
         var step = 0;
-        if (!/^[a-z]+\d*$/.test(directive)) {
-            return false;
-        } else {
+
+        if (/^[a-z]+\d*$/.test(directive)) { // matches GO TUN TRA MOV BUILD directives 
             name = directive.match(/[a-z]+/)[0];
             if (!square[name]) {
                 return false;
@@ -349,6 +544,30 @@ var codeArea = (function() {
 
             res = [name, step];
             return res;
+        } else if (/^[a-z]{3}#([0-9a-fA-F]{3}){1,2}$/.test(directive)) { // matches BUR #COLOR directive
+            name = directive.match(/^[a-z]+/)[0];
+            if (!square[name]) {
+                return false;
+            }
+
+            color = directive.match(/#.+$/)[0];
+
+            res = [name, color];
+            return res;
+        } else if (/^[a-z]{5}\d+,\d+$/.test(directive)) { // matches MOV TO x,y directive
+            name = directive.match(/[a-z]+/)[0];
+            if (!square[name]) {
+                return false;
+            }
+
+            position = directive.match(/\d+/).map(function(elem) {
+                return parseInt(elem);
+            });
+
+            res = [name, position];
+            return res;
+        } else {
+            return false;
         }
     }
 
@@ -396,7 +615,7 @@ var codeArea = (function() {
     function autoSizeAndCheck(e) {
         // if (e.keyCode === 13) {
         autoSize();
-        highlightError(findError()); // checkError();
+        highlightError(findError());
         // }
     }
 
@@ -409,8 +628,6 @@ var codeArea = (function() {
         },
         runDirectives: function() {
             var values = getNonEmptyDirectives();
-            console.log("After NonEmp, values: ")
-            console.log(values)
 
             var time = 0;
             var TIMESPACE = 800;
@@ -423,34 +640,9 @@ var codeArea = (function() {
             }
             // else
             for (var i = 0; i < values.length; i++) {
-                // window.setTimeout(function() {}, );
                 console.log("NonEmpQueue-" + i + ": " + checkOneDirective(values[i]));
 
-                // 闭包 Way 1 - 无法达到 setTimeout 的效果
-                // [!!NOTE] :( 问题出在，对传给 setTimeout 函数的回调函数的立即调用上 Orz
-                /*
-                tempID = window.setTimeout(function(index) {
-                    // Do sth...
-                }(i), time);
-                stIDs.push(tempID);
-                */
-
-                // 闭包 Way 2(ver1) - 无法取消 setTimeout 队列（？）
-
-                /*(function(index) {
-                    window.setTimeout(function() {
-                        var arr = checkOneDirective(values[index]);
-                        var name = arr[0];
-                        var step = arr[1];
-                        try {
-                            square[name](step);
-                        } catch (e) {
-                            alert(e.message);
-                        }
-                    }, time);
-                })(i);*/
-
-                // 闭包 Way 2(ver2) - 尝试达到 setTimeout
+                // 闭包 Way 2(ver2) 
                 tempID = (function(index) {
                     return window.setTimeout(function() {
                         var arr = checkOneDirective(values[index]);
@@ -463,16 +655,18 @@ var codeArea = (function() {
                         } catch (e) {
                             highlightRunTimeErrorLine(index);
 
-                            // console.log("whoooops...");
-                            // console.log(stIDs);
                             // 取消后续所有 setTimeout
                             stIDs.slice(index + 1).forEach(function(elem) {
                                 window.clearTimeout(elem);
                                 console.log("clear----clear----clear")
                             });
 
-                            // console.log(e.message);
-                            alert(e.message);
+                            if (e.way === "alert") {
+                                alert(e.message);
+                            } else if (e.way === "console") {
+                                console.log(e.message);
+                                board.printIncludeSq();
+                            }
                         }
                     }, time);
                 })(i);
@@ -490,47 +684,30 @@ var codeArea = (function() {
     };
 })();
 
-/*var getValidDirective = function(whatever) {
-    // 数组去重
-    var valueList = {};
-    var uniqueTrmdValues = [];
-    for (var i = 0; i < trimmedValues.length; i++) {
-        if (valueList[trimmedValues[i]] === undefined) {
-            valueList[trimmedValues[i]] = 1;
-            uniqueTrmdValues.push(trimmedValues[i]);
-        } else {
-            valueList[trimmedValues[i]]++;
-        }
-    }
-};*/
-
 addEventHandler(runBtnDOM, "click", function() {
     // 原本的 try-catch 是写在这里的，但是由于 setTimeout 方法对线程的破坏（阻塞？无视？？）
     // 将 try-catch 移到每个单独的 setTimeout 方法内部
-    /*try {*/
-    // console.log("Which one is the first?")
-    codeArea.runDirectives();
-    // console.log("try{}'s end.")
-    /*}*/
-    /*catch (e) {
-       alert(e.message);
-    }*/
-    // console.log("event handler's end")
-    // console.log("-------------")
+    try {
+        codeArea.runDirectives();
+    } catch (e) {
+        alert(e.massage);
+    }
 });
 
 addEventHandler(refreshBtnDOM, "click", function() {
     codeArea.refresh();
 });
 
-/*directivesDOM.onkeydown = function(event) {
+addEventHandler(randomBtnDOM, "click", function() {
+    board.setRandomWall();
+});
+
+addEventHandler(directivesDOM, "keydown", function(event) {
     var e = event || window.event;
-    switch (e.keyCode) {
-        case 13:
-            dirInputBtnDOM.click(); // 关于模拟点击事件触发的其他方法（better way???）
-            break;
+    if (e.keyCode === 13 && e.ctrlKey) {
+        runBtnDOM.click(); // 关于模拟点击事件触发的其他方法（better way???）
     }
-};*/
+});
 
 window.onload = function() {
     board.generate();

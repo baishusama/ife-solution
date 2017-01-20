@@ -27,7 +27,7 @@ body {
   border-bottom: 2px solid #ddd;
   width: 40px;
   height: 40px;
-  background-color: mistyrose;
+  background-color: #fff;
   /* [!!note] 注意 nth-child 里的 n 必须写在最前，否则不会生效 */
   /* 添加数字 */ }
   .grid.clearfix {
@@ -64,6 +64,8 @@ body {
   .grid.rightmost {
     border-right: none;
     width: 38px; }
+  .grid.hasWall {
+    background: linear-gradient(-45deg, #fb3 25%, #2a2b2c 0, #2a2b2c 50%, #fb3 0, #fb3 75%, #2a2b2c 0); }
 
 #square {
   position: absolute;
@@ -105,24 +107,25 @@ body {
     margin-bottom: 10px;
     width: 500px; }
     .controller .btnWrapper input {
+      float: left;
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box;
       display: block;
       margin: 0;
+      margin-right: 2%;
       border: 1px solid;
       border-radius: 3px;
       padding: 6px 0;
-      width: 45%;
+      width: 32%;
       background-color: #3eb7d1;
       color: rgba(255, 255, 255, 0.8); }
-      .controller .btnWrapper input.run {
-        float: left; }
       .controller .btnWrapper input.refresh {
-        float: right;
         border-color: #3eb7d1;
         background-color: #FFF;
         color: #3eb7d1; }
+      .controller .btnWrapper input.buildRandomWall {
+        margin: 0; }
   .controller .dirWrapper {
     clear: left;
     overflow-y: auto;
