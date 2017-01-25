@@ -65,7 +65,8 @@ body {
     border-right: none;
     width: 38px; }
   .grid.hasWall {
-    background: linear-gradient(-45deg, #fb3 25%, #2a2b2c 0, #2a2b2c 50%, #fb3 0, #fb3 75%, #2a2b2c 0); }
+    background: linear-gradient(-45deg, transparent 25%, #2a2b2c 0, #2a2b2c 50%, transparent 0, transparent 75%, #2a2b2c 0);
+    background-color: lightgray; }
 
 #square {
   position: absolute;

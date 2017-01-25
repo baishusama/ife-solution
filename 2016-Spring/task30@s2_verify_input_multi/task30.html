@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify input</title>
+    <style>
+    body {
+        margin: 0;
+    }
+    
+    fieldset {
+        border-radius: 6px;
+    }
+    
+    .wrapper {
+        overflow: hidden;
+        padding: 5px;
+    }
+    
+    .wrapper label {
+        float: left;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-right: 2%;
+        width: 20%;
+        text-align: right;
+        line-height: 22px;
+    }
+    
+    .wrapper input {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        float: right;
+        border: 1px solid #555;
+        border-radius: 3px;
+        padding: 0 6px;
+        width: 80%;
+        line-height: 20px;
+        outline: none;
+    }
+    
+    .wrapper .info {
+        display: none;
+        float: right;
+        padding: 3px 0;
+        width: 80%;
+        color: #ddd;
+        font-size: 12px;
+    }
+    
+    .wrapper input:focus + .info {
+        display: block;
+    }
+    
+    .wrapper .invalid {
+        border-color: red;
+    }
+    
+    .wrapper .valid {
+        border-color: yellowgreen;
+    }
+    
+    .wrapper .invalid + .info {
+        display: block;
+        color: red;
+    }
+    
+    .wrapper .valid + .info {
+        display: block;
+        color: yellowgreen;
+    }
+    
+    #verify {
+        float: right;
+        margin-right: 5px;
+        border: 1px solid steelblue;
+        border-radius: 3px;
+        padding: 0 6px;
+        width: 10%;
+        background-color: steelblue;
+        color: #fff;
+        line-height: 20px;
+        outline: none;
+    }
+    </style>
+</head>
+
+<body>
+    <fieldset>
+        <legend>用户信息填写</legend>
+        <div class="wrapper">
+            <label for="name">用户名</label>
+            <input type="text" id="name" />
+            <span class="info">必填项。长度为 4 ~ 16 个字符。</span>
+        </div>
+        <div class="wrapper">
+            <label for="pwd">密码</label>
+            <input type="password" id="pwd">
+            <span class="info">必填项。长度为 4 ~ 16 个字符，必须包含数字和字母。</span>
+        </div>
+        <div class="wrapper">
+            <label for="repeatPwd">密码确认</label>
+            <input type="password" id="repeatPwd">
+            <span class="info">必填项。必须和上方密码一致。</span>
+        </div>
+        <div class="wrapper">
+            <label for="email">邮箱</label>
+            <input type="text" id="email">
+            <span class="info">必填项。需为 example@eg.eg 格式。</span>
+        </div>
+        <div class="wrapper">
+            <label for="mobile">手机</label>
+            <input type="number" id="mobile">
+            <span class="info">必填项。</span>
+        </div>
+        <input type="button" id="verify" value="提交" />
+    </fieldset>
+    <script src="task30.js"></script>
+</body>
+
+</html>

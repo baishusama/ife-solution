@@ -9,24 +9,24 @@ function addEventHandler(elem, event, handler) {
     }
 }
 
+// 用于添加类名
 function addClassName(elem, newClassName) {
     if (elem.className.split(/\s/).indexOf(newClassName) === -1) {
         elem.className += (' ' + newClassName);
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
-
+// 用于删除类名
 function removeClassName(elem, oldClassName) {
-    var cnArr = elem.className.split(/\s/);
-    var index = cnArr.indexOf(oldClassName);
+    var names = elem.className.split(/\s/);
+    var index = names.indexOf(oldClassName);
     if (index !== -1) {
-        elem.className = cnArr.splice(index, 1).join();
+        names.splice(index, 1);
+        elem.className = names.join(' ');
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 /* DOM */
@@ -91,7 +91,7 @@ var validStylish = function() {
 var checkValue = function(rawVal) {
     var information = "";
     var val = isNotEmpty(rawVal);
-    
+
     if (!val) {
         information = "用户名不能为空！";
     } else if (!notContainWhitespace(val)) {
@@ -99,7 +99,6 @@ var checkValue = function(rawVal) {
     } else if (!isValidLength(val)) {
         information = "用户名长度要在 4 ~ 16 个字符内！";
     }
-
 
     if (information) {
         invalidStylish(information);

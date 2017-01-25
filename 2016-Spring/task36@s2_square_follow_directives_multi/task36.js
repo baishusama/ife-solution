@@ -177,7 +177,8 @@ var board = (function() {
     };
 
     var brushWallAt = function(x, y, color) {
-        boardDOM.children[x * 10 + y].style.backgroundColor = color;
+        var wall = boardDOM.children[x * 10 + y];
+        wall.style.backgroundColor = color;
     };
 
     return {
@@ -690,7 +691,7 @@ addEventHandler(runBtnDOM, "click", function() {
     try {
         codeArea.runDirectives();
     } catch (e) {
-        alert(e.massage);
+        alert(e.message);
     }
 });
 
