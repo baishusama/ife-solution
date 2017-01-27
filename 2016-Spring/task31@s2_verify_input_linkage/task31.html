@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Linkage inputs</title>
+    <style>
+    body {
+        margin: 0;
+    }
+    
+    form {
+        position: relative;
+        margin: 4em auto;
+        padding: 2em;
+        max-width: 50%;
+        min-width: 360px;
+        background: aliceblue;
+        background: linear-gradient(-45deg, transparent 1.414em, aliceblue 0);
+    }
+    
+    form:after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        display: block;
+        content: '\a0';
+        width: 0;
+        height: 0;
+        border-top: 1em solid skyblue;
+        border-left: 1em solid skyblue;
+        border-bottom: 1em solid transparent;
+        border-right: 1em solid transparent;
+    }
+    
+    label {
+        display: inline-block;
+        padding: 0.5em 2em 0.5em 0.5em;
+    }
+    
+    #student:checked ~ .s1 {
+        display: block;
+    }
+    
+    #notStudent:checked ~ .s2 {
+        display: block;
+    }
+    
+    section {
+        display: none;
+        padding: 1em 0;
+        text-align: center;
+    }
+    
+    select {
+        min-width: 8em;
+        outline: none;
+    }
+    
+    input[type="text"] {
+        outline: none;
+    }
+    </style>
+</head>
+
+<body>
+    <form action="">
+        <input type="radio" value="student" name="status" id="student" checked="true" />
+        <label for="student">在校生</label>
+        <input type="radio" value="notStudent " name="status" id="notStudent" />
+        <label for="notStudent">非在校生</label>
+        <section class="s1">
+            <span>学校</span>
+            <select name="city" id="city">
+                <option value="beijing">北京</option>
+                <option value="shanghai" selected="true">上海</option>
+                <option value="hangzhou">杭州</option>
+            </select>
+            <select name="school" id="school"></select>
+        </section>
+        <section class="s2">
+            <span>就业单位</span>
+            <input type="text" name="employmentUnit" id="employmentUnit" />
+        </section>
+    </form>
+    <script src="task31_v2.js "></script>
+</body>
+
+</html>
