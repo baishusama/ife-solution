@@ -1,0 +1,290 @@
+@charset "UTF-8";
+/* debug 'Invalid US-ASCII character' */
+body {
+  margin: 0; }
+
+.panel {
+  counter-reset: rowIndex; }
+
+/*--------------------
+    区域 & 小方块
+--------------------*/
+#board {
+  position: relative;
+  margin: 100px auto 20px;
+  border: 2px solid;
+  width: 398px;
+  height: 398px;
+  counter-reset: colIndex; }
+
+.grid {
+  position: relative;
+  float: left;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-right: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  /* [!!note] 注意 nth-child 里的 n 必须写在最前，否则不会生效 */
+  /* 添加数字 */ }
+  .grid.clearfix {
+    clear: both; }
+  .grid:nth-child(-n + 10):before {
+    position: absolute;
+    top: -24px;
+    left: 8px;
+    display: block;
+    /* counter-reset by #board */
+    counter-increment: colIndex;
+    content: counter(colIndex);
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-family: Helvetica; }
+  .grid:nth-child(10n + 1):after {
+    position: absolute;
+    top: 8px;
+    left: -24px;
+    display: block;
+    /* counter-reset by .panel */
+    counter-increment: rowIndex;
+    content: counter(rowIndex);
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-family: Helvetica; }
+  .grid.downmost {
+    border-bottom: none;
+    height: 38px; }
+  .grid.rightmost {
+    border-right: none;
+    width: 38px; }
+  .grid.hasWall {
+    background: linear-gradient(-45deg, transparent 25%, #2a2b2c 0, #2a2b2c 50%, transparent 0, transparent 75%, #2a2b2c 0);
+    background-color: lightgray; }
+
+#square {
+  position: absolute;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-top: 8px solid salmon;
+  width: 40px;
+  height: 40px;
+  background-color: lightpink;
+  transition: all .5s; }
+  #square:before, #square:after {
+    position: absolute;
+    top: -6px;
+    display: block;
+    content: '\a0';
+    border-radius: 5px / 15px;
+    width: 10px;
+    height: 30px;
+    background-color: salmon; }
+  #square:before {
+    left: 6px;
+    transform: rotate(5deg); }
+  #square:after {
+    right: 6px;
+    transform: rotate(-5deg); }
+
+/*--------------------
+    按钮 & 代码编辑
+--------------------*/
+.controller {
+  overflow: hidden;
+  margin: 0 auto;
+  /*width: 420px;*/
+  text-align: center; }
+  .controller .btnWrapper {
+    overflow: hidden;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    width: 500px; }
+    .controller .btnWrapper input {
+      float: left;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      display: block;
+      margin: 0;
+      margin-right: 2%;
+      border: 1px solid;
+      border-radius: 3px;
+      padding: 6px 0;
+      width: 32%;
+      background-color: #3eb7d1;
+      color: rgba(255, 255, 255, 0.8); }
+      .controller .btnWrapper input.refresh {
+        border-color: #3eb7d1;
+        background-color: #FFF;
+        color: #3eb7d1; }
+      .controller .btnWrapper input.buildRandomWall {
+        margin: 0; }
+  .controller .dirWrapper {
+    clear: left;
+    overflow-y: auto;
+    margin: 0 auto;
+    border-radius: 4px;
+    width: 500px;
+    height: 200px; }
+    .controller .dirWrapper label {
+      position: relative;
+      display: block;
+      margin: 0 auto; }
+      .controller .dirWrapper label ol {
+        margin: 0;
+        padding: 0;
+        width: 10%;
+        min-height: 200px;
+        background-color: #1d1e21;
+        text-align: right;
+        counter-reset: lineNum; }
+        .controller .dirWrapper label ol li {
+          position: relative;
+          padding: 0 5px;
+          list-style: none; }
+          .controller .dirWrapper label ol li:before {
+            display: block;
+            counter-increment: lineNum;
+            content: counter(lineNum);
+            font-family: Consolas;
+            line-height: 20px;
+            color: #8f9293; }
+          .controller .dirWrapper label ol li.current {
+            background-color: #3eb7d1; }
+            .controller .dirWrapper label ol li.current:before {
+              color: #fff; }
+          .controller .dirWrapper label ol li.stop {
+            background-color: #f56680; }
+            .controller .dirWrapper label ol li.stop:before {
+              color: #fff; }
+          .controller .dirWrapper label ol li.errorLine:after {
+            position: absolute;
+            top: 50%;
+            left: 4px;
+            display: block;
+            content: '\a0';
+            border-radius: 6px;
+            width: 6px;
+            height: 6px;
+            background-color: #f56680;
+            transform: translate(0, -3px);
+            -webkit-animation: twinkling 800ms ease-out infinite alternate;
+            -moz-animation: twinkling 800ms ease-out infinite alternate;
+            -ms-animation: twinkling 800ms ease-out infinite alternate;
+            -o-animation: twinkling 800ms ease-out infinite alternate;
+            animation: twinkling 800ms ease-out infinite alternate;
+            /*这里使用了呼吸动画*/ }
+      .controller .dirWrapper label textarea {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 10%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border: none;
+        padding: 0 10px;
+        width: 90%;
+        height: 100%;
+        background-color: #2a2b2c;
+        color: #fff;
+        line-height: 20px;
+        font-family: Consolas;
+        resize: none;
+        outline: none; }
+
+/*以下定义动画帧*/
+@-webkit-keyframes twinkling {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+@-moz-keyframes twinkling {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+@-ms-keyframes twinkling {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+@-o-keyframes twinkling {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+@keyframes twinkling {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+/*--------------------
+    合法指令表
+--------------------*/
+#cheatSheet {
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  right: 10px;
+  border: 4px solid #2a9ab2;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  max-width: 240px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.7);
+  font-family: Consolas; }
+  #cheatSheet:hover {
+    height: auto; }
+  #cheatSheet h4 {
+    position: relative;
+    margin: 21px 0;
+    color: #2a9ab2;
+    text-align: center;
+    font-family: Helvetica; }
+    #cheatSheet h4:after {
+      position: absolute;
+      top: 4px;
+      right: 20px;
+      display: inline-block;
+      content: '\a0';
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-top: 8px solid #2a9ab2;
+      border-right: 6px solid transparent; }
+  #cheatSheet ul {
+    padding: 0 20px 0 30px;
+    font-size: 14px; }
+    #cheatSheet ul li {
+      position: relative;
+      padding: 3px 0 3px 10px;
+      list-style: none; }
+      #cheatSheet ul li:before {
+        position: absolute;
+        top: 6px;
+        left: 0;
+        display: block;
+        content: '\a0';
+        width: 0;
+        height: 0;
+        border-top: 4px solid transparent;
+        border-left: 6px solid #2a9ab2;
+        border-bottom: 4px solid transparent; }
+  #cheatSheet p {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 20px 20px 20px;
+    font-size: 13px; }
+
+/*# sourceMappingURL=style.css.map */
